@@ -1,94 +1,108 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { Plus, Search, Download, Users, UserCheck, TrendingUp, UserX } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { DataTable } from '@/components/ui/data-table'
-import { Loading } from '@/components/ui/loading'
-import { EmptyState } from '@/components/ui/empty-state'
-import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { StatsCard } from '@/components/ui/stats-card'
-import { Candidate, CandidateStatus } from '@/types'
-import { ColumnDef } from '@tanstack/react-table'
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  Plus,
+  Search,
+  Download,
+  Users,
+  UserCheck,
+  TrendingUp,
+  UserX,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { DataTable } from "@/components/ui/data-table";
+import { Loading } from "@/components/ui/loading";
+import { EmptyState } from "@/components/ui/empty-state";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { StatsCard } from "@/components/ui/stats-card";
+import { Candidate, CandidateStatus } from "@/types";
+import { ColumnDef } from "@tanstack/react-table";
 
 interface CandidatesResponse {
-  success: boolean
-  data: Candidate[]
+  success: boolean;
+  data: Candidate[];
   pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 interface CandidateStats {
-  total: number
-  disponivel: number
-  contratado: number
-  inativo: number
-  averageScore: number
+  total: number;
+  disponivel: number;
+  contratado: number;
+  inativo: number;
+  averageScore: number;
 }
 
 const statusColors: Record<CandidateStatus, string> = {
-  disponivel: 'bg-green-100 text-green-800',
-  em_processo: 'bg-blue-100 text-blue-800',
-  contratado: 'bg-purple-100 text-purple-800',
-  inativo: 'bg-gray-100 text-gray-800'
-}
+  disponivel: "bg-green-100 text-green-800",
+  em_processo: "bg-blue-100 text-blue-800",
+  contratado: "bg-purple-100 text-purple-800",
+  inativo: "bg-gray-100 text-gray-800",
+};
 
 const statusLabels: Record<CandidateStatus, string> = {
-  disponivel: 'Disponível',
-  em_processo: 'Em Processo',
-  contratado: 'Contratado',
-  inativo: 'Inativo'
-}
+  disponivel: "Disponível",
+  em_processo: "Em Processo",
+  contratado: "Contratado",
+  inativo: "Inativo",
+};
 
 export default function CandidatesPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-  const [candidates, setCandidates] = useState<Candidate[]>([])
-  const [stats, setStats] = useState<CandidateStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<CandidateStatus | ''>('')
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [stats, setStats] = useState<CandidateStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<CandidateStatus | "">("");
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 0
-  })
+    totalPages: 0,
+  });
 
-  // Definir colunas da tabela
+  //// Definir colunas da tabela
   const columns: ColumnDef<Candidate>[] = [
     {
-      accessorKey: 'name',
-      header: 'Nome',
+      accessorKey: "name",
+      header: "Nome",
       cell: ({ row }) => (
         <div className="flex flex-col">
           <span className="font-medium">{row.original.name}</span>
           <span className="text-sm text-gray-500">{row.original.email}</span>
         </div>
-      )
+      ),
     },
     {
-      accessorKey: 'location',
-      header: 'Localização',
-      cell: ({ row }) => row.original.location || '-'
+      accessorKey: "location",
+      header: "Localização",
+      cell: ({ row }) => row.original.location || "-",
     },
     {
-      accessorKey: 'experience',
-      header: 'Experiência',
-      cell: ({ row }) => `${row.original.experience} anos`
+      accessorKey: "experience",
+      header: "Experiência",
+      cell: ({ row }) => `${row.original.experience} anos`,
     },
     {
-      accessorKey: 'skills',
-      header: 'Principais Skills',
+      accessorKey: "skills",
+      header: "Principais Skills",
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
           {row.original.skills.slice(0, 3).map((skill, index) => (
@@ -102,36 +116,42 @@ export default function CandidatesPage() {
             </Badge>
           )}
         </div>
-      )
+      ),
     },
     {
-      accessorKey: 'overallScore',
-      header: 'Score IA',
+      accessorKey: "overallScore",
+      header: "Score IA",
       cell: ({ row }) => {
-        const score = row.original.overallScore
-        if (!score) return '-'
-        
-        const color = score >= 80 ? 'text-green-600' : score >= 60 ? 'text-yellow-600' : 'text-red-600'
-        return <span className={`font-medium ${color}`}>{score}%</span>
-      }
+        const score = row.original.overallScore;
+        if (!score) return "-";
+
+        const color =
+          score >= 80
+            ? "text-green-600"
+            : score >= 60
+            ? "text-yellow-600"
+            : "text-red-600";
+        return <span className={`font-medium ${color}`}>{score}%</span>;
+      },
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
+      accessorKey: "status",
+      header: "Status",
       cell: ({ row }) => (
         <Badge className={statusColors[row.original.status as CandidateStatus]}>
           {statusLabels[row.original.status as CandidateStatus]}
         </Badge>
-      )
+      ),
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Cadastrado em',
-      cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString('pt-BR')
+      accessorKey: "createdAt",
+      header: "Cadastrado em",
+      cell: ({ row }) =>
+        new Date(row.original.createdAt).toLocaleDateString("pt-BR"),
     },
     {
-      id: 'actions',
-      header: 'Ações',
+      id: "actions",
+      header: "Ações",
       cell: ({ row }) => (
         <Button
           variant="outline"
@@ -140,101 +160,101 @@ export default function CandidatesPage() {
         >
           Ver Detalhes
         </Button>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   // Buscar candidatos
   const fetchCandidates = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
         ...(searchTerm && { search: searchTerm }),
-        ...(statusFilter && { status: statusFilter })
-      })
+        ...(statusFilter && { status: statusFilter }),
+      });
 
-      const response = await fetch(`/api/candidates?${params}`)
-      const data: CandidatesResponse = await response.json()
+      const response = await fetch(`/api/candidates?${params}`);
+      const data: CandidatesResponse = await response.json();
 
       if (data.success) {
-        setCandidates(data.data)
-        setPagination(data.pagination)
+        setCandidates(data.data);
+        setPagination(data.pagination);
       }
     } catch (error) {
-      console.error('Error fetching candidates:', error)
+      console.error("Error fetching candidates:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Buscar estatísticas
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/candidates/stats')
-      const data = await response.json()
-      
+      const response = await fetch("/api/candidates/stats");
+      const data = await response.json();
+
       if (data.success) {
-        setStats(data.data)
+        setStats(data.data);
       }
     } catch (error) {
-      console.error('Error fetching stats:', error)
+      console.error("Error fetching stats:", error);
     }
-  }
+  };
 
   // Efeitos
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchCandidates()
-      fetchStats()
+    if (status === "authenticated") {
+      fetchCandidates();
+      fetchStats();
     }
-  }, [status, pagination.page, searchTerm, statusFilter])
+  }, [status, pagination.page, searchTerm, statusFilter]);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/signin')
+    if (status === "unauthenticated") {
+      router.push("/signin");
     }
-  }, [status, router])
+  }, [status, router]);
 
   // Handlers
   const handleSearch = (value: string) => {
-    setSearchTerm(value)
-    setPagination(prev => ({ ...prev, page: 1 }))
-  }
+    setSearchTerm(value);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
 
-  const handleStatusFilter = (status: CandidateStatus | '') => {
-    setStatusFilter(status)
-    setPagination(prev => ({ ...prev, page: 1 }))
-  }
+  const handleStatusFilter = (status: CandidateStatus | "") => {
+    setStatusFilter(status);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
 
   const handleExport = async () => {
     try {
-      const response = await fetch('/api/candidates/export')
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `candidatos-${new Date().toISOString().split('T')[0]}.csv`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      const response = await fetch("/api/candidates/export");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `candidatos-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
-      console.error('Error exporting candidates:', error)
+      console.error("Error exporting candidates:", error);
     }
-  }
+  };
 
-  if (status === 'loading' || loading) {
+  if (status === "loading" || loading) {
     return (
       <DashboardLayout>
         <Loading text="Carregando candidatos..." />
       </DashboardLayout>
-    )
+    );
   }
 
-  if (status === 'unauthenticated') {
-    return null
+  if (status === "unauthenticated") {
+    return null;
   }
 
   return (
@@ -253,7 +273,7 @@ export default function CandidatesPage() {
               <Download className="h-4 w-4 mr-2" />
               Exportar
             </Button>
-            <Button onClick={() => router.push('/candidates/new')}>
+            <Button onClick={() => router.push("/candidates/new")}>
               <Plus className="h-4 w-4 mr-2" />
               Novo Candidato
             </Button>
@@ -319,7 +339,9 @@ export default function CandidatesPage() {
               <div className="w-full sm:w-48">
                 <select
                   value={statusFilter}
-                  onChange={(e) => handleStatusFilter(e.target.value as CandidateStatus | '')}
+                  onChange={(e) =>
+                    handleStatusFilter(e.target.value as CandidateStatus | "")
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Todos os status</option>
@@ -352,12 +374,12 @@ export default function CandidatesPage() {
             title="Nenhum candidato encontrado"
             description="Comece adicionando seu primeiro candidato ao sistema."
             action={{
-              label: 'Adicionar Candidato',
-              onClick: () => router.push('/candidates/new')
+              label: "Adicionar Candidato",
+              onClick: () => router.push("/candidates/new"),
             }}
           />
         )}
       </div>
     </DashboardLayout>
-  )
+  );
 }

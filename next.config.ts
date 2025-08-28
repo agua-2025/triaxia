@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable standalone output for Docker
-  output: 'standalone',
+  // Remover esta linha para Vercel: output: 'standalone',
   
   // External packages for server components
   serverExternalPackages: ['@prisma/client'],
