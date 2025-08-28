@@ -1,0 +1,144 @@
+// TalentIA - Sistema SaaS Multi-Tenant de Recrutamento
+// Arquitetura: Cada empresa cliente tem seu próprio portal isolado
+// Estrutura: talentia.com (admin) + empresa.talentia.com (portais)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  SUPER_ADMIN    // Admin da plataforma TalentIA
+  COMPANY_ADMIN  // Admin da empresa cliente
+  COMPANY_USER   // Usuário da empresa cliente
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+}
+
+// Modelo principal: Tenant (Empresa Cliente)
+model Tenant {
+  id          String       @id @default(cuid())
+  slug        String       @unique // "microsoft", "google"
+  name        String       // "Microsoft Corporation"
+  status      TenantStatus @default(ACTIVE)
+  
+  // Configurações de domínio
+  subdomain   String       @unique // "microsoft" (microsoft.talentia.com)
+  customDomain String?     @unique // "jobs.microsoft.com" (futuro)
+  
+  // Branding básico (Etapa 1)
+  primaryColor   String    @default("#3B82F6")
+  secondaryColor String    @default("#1E40AF")
+  logo          String?    // URL do logo
+  favicon       String?    // URL do favicon
+  
+  // Relacionamentos
+  users         User[]
+  companyProfile CompanyProfile?
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  @@index([slug])
+  @@index([subdomain])
+  @@map("tenants")
+}
+
+// Usuários (isolados por tenant)
+model User {
+  id        String   @id @default(cuid())
+  email     String   
+  name      String?
+  image     String?
+  role      UserRole @default(COMPANY_ADMIN)
+  
+  // Multi-tenant: usuário pertence a um tenant
+  tenantId  String
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  
+  // Relacionamentos
+  companyProfile CompanyProfile?
+  accounts       Account[]
+  sessions       Session[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Email é único por tenant, não globalmente
+  @@unique([email, tenantId])
+  @@index([tenantId])
+  @@map("users")
+}
+
+// Perfil da empresa
+model CompanyProfile {
+  id          String @id @default(cuid())
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id])
+  
+  tenantId    String @unique
+  tenant      Tenant @relation(fields: [tenantId], references: [id])
+  
+  // Dados da empresa
+  companyName String
+  cnpj        String?
+  phone       String?
+  location    String?
+  description String?
+  website     String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("company_profiles")
+}
+
+// Modelos de autenticação (NextAuth.js)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
