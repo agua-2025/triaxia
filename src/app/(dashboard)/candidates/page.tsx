@@ -78,7 +78,7 @@ export default function CandidatesPage() {
     totalPages: 0,
   });
 
-  //// Definir colunas da tabela
+  // Definir colunas da tabela
   const columns: ColumnDef<Candidate>[] = [
     {
       accessorKey: "name",
