@@ -1,134 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
 
-generator seed {
-  provider = "tsx"
-  output   = "./seed.ts"
-}
-
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Company {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  subdomain   String   @unique
-  logoUrl     String?
-  primaryColor String  @default("#3B82F6")
+// Multi-tenant models
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  domain    String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users     User[]
+  projects  Project[]
   
-  // Configurações
-  isActive    Boolean  @default(true)
-  plan        String   @default("basic")
-  
-  // Relacionamentos
-  users       User[]
-  candidates  Candidate[]
-  positions   Position[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("companies")
+  @@map("tenants")
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("admin")
-  
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String
+  id       String @id @default(cuid())
+  email    String @unique
+  name     String?
+  tenantId String
+  role     UserRole @default(USER)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projects Project[]
   
   @@map("users")
 }
 
-model Candidate {
-  id          String    @id @default(cuid())
+model Project {
+  id          String   @id @default(cuid())
   name        String
-  email       String
-  phone       String?
-  location    String?
-  age         Int?
+  description String?
+  tenantId    String
+  userId      String
   
-  // Profile
-  summary     String?
-  experience  Int       @default(0)
-  education   String?
-  salary      String?
-  availability String   @default("integral")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Skills e IA
-  skills      Json      @default("[]")
-  aiAnalysis  Json?     // Análise completa da IA
-  overallScore Float?   // Score 0-100
-  
-  // Status
-  status      String    @default("disponivel")
-  isActive    Boolean   @default(true)
-  
-  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId   String
-  
-  applications Application[]
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@unique([email, companyId])
-  @@map("candidates")
+  @@map("projects")
 }
 
-model Position {
-  id             String    @id @default(cuid())
-  title          String
-  description    String?
-  department     String?
-  
-  requiredSkills Json      @default("[]")
-  minExperience  Int       @default(0)
-  requiredEducation String @default("ensino_medio")
-  salaryRange    String?
-  workType       String    @default("integral")
-  
-  isActive       Boolean   @default(true)
-  urgency        String    @default("media")
-  
-  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId      String
-  
-  applications   Application[]
-  
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
-  @@map("positions")
-}
-
-model Application {
-  id          String    @id @default(cuid())
-  
-  matchScore  Float     // 0-100
-  aiAnalysis  Json?     // Análise da IA
-  status      String    @default("novo")
-  
-  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-  candidateId String
-  
-  position    Position  @relation(fields: [positionId], references: [id], onDelete: Cascade)
-  positionId  String
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@unique([candidateId, positionId])
-  @@map("applications")
+enum UserRole {
+  ADMIN
+  USER
 }

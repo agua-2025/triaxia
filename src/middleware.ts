@@ -1,86 +1,91 @@
-import { withAuth } from 'next-auth/middleware'
-import { NextResponse } from 'next/server'
-import { getSubdomain, validateSubdomain } from '@/lib/auth'
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
 
-export default withAuth(
-  async function middleware(req) {
-    const { pathname } = req.nextUrl
-    const host = req.headers.get('host') || ''
-    
-    // Permitir acesso direto às rotas de auth
-    if (pathname.startsWith('/auth')) {
-      return NextResponse.next()
+// Configure Edge Runtime
+export const runtime = 'edge'
+
+export async function getCurrentTenant(request: NextRequest) {
+  // Extract tenant from subdomain or path
+  const host = request.headers.get('host') || ''
+  const url = new URL(request.url)
+  
+  // Check for subdomain (tenant.domain.com)
+  const subdomain = host.split('.')[0]
+  if (subdomain && subdomain !== 'www' && subdomain !== 'localhost') {
+    return {
+      tenantId: subdomain,
+      tenantSlug: subdomain
     }
-    
-    // Extrair subdomain
-    const subdomain = getSubdomain(host)
-    
-    // Se não há subdomain e não é uma rota de auth, redirecionar para página de seleção de empresa
-    if (!subdomain && !pathname.startsWith('/api')) {
-      return NextResponse.redirect(new URL('/auth/select-company', req.url))
-    }
-    
-    // Se há subdomain, validar se existe
-    if (subdomain) {
-      const isValidSubdomain = await validateSubdomain(subdomain)
-      if (!isValidSubdomain) {
-        return NextResponse.redirect(new URL('/auth/invalid-company', req.url))
-      }
-    }
-    
-    // Verificar se o usuário está tentando acessar uma rota protegida
-    if (pathname.startsWith('/dashboard')) {
-      // O token está disponível através do req.nextauth.token quando usando withAuth
-      const token = req.nextauth?.token
-      
-      if (!token) {
-        return NextResponse.redirect(new URL('/auth/signin', req.url))
-      }
-      
-      // Verificar se o usuário pertence à empresa do subdomain
-      if (subdomain && token.company?.subdomain !== subdomain) {
-        return NextResponse.redirect(new URL('/auth/unauthorized', req.url))
-      }
-    }
-    
-    return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl
-        
-        // Permitir acesso às rotas públicas
-        if (
-          pathname.startsWith('/auth') ||
-          pathname.startsWith('/api/auth') ||
-          pathname === '/' ||
-          pathname.startsWith('/_next') ||
-          pathname.startsWith('/favicon')
-        ) {
-          return true
-        }
-        
-        // Exigir autenticação para rotas do dashboard
-        if (pathname.startsWith('/dashboard')) {
-          return !!token
-        }
-        
-        return true
-      },
-    },
   }
-)
+  
+  // Check for path-based tenant (/tenant/dashboard)
+  const pathSegments = url.pathname.split('/')
+  if (pathSegments[1] && pathSegments[1] !== 'api') {
+    return {
+      tenantId: pathSegments[1],
+      tenantSlug: pathSegments[1]
+    }
+  }
+  
+  return null
+}
+
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
+            supabaseResponse.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
+  )
+
+  // Get user session
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Get tenant info
+  const tenant = await getCurrentTenant(request)
+  
+  // Add tenant headers for API routes and pages
+  if (tenant) {
+    supabaseResponse.headers.set('x-tenant-id', tenant.tenantId)
+    supabaseResponse.headers.set('x-tenant-slug', tenant.tenantSlug)
+  }
+
+  // Protect dashboard routes
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!user) {
+      const redirectUrl = new URL('/login', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+    
+    if (!tenant) {
+      const redirectUrl = new URL('/select-tenant', request.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
+
+  return supabaseResponse
+}
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
