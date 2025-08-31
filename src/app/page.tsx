@@ -844,18 +844,18 @@ export default function Home() {
             </div>
 
             {/* Professional Plan - Popular */}
-            <div className="group relative bg-gradient-to-br from-white/95 to-purple-50/95 border-2 border-purple-300 rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col overflow-hidden transform scale-105">
+            <div className="group relative bg-gradient-to-br from-white/95 to-purple-50/95 border-2 border-purple-300 rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-400/15 via-pink-400/15 to-indigo-400/15 opacity-100 animate-pulse"></div>
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce">
-                  🚀 Mais Popular
-                </span>
-              </div>
-
+              
               <div className="relative z-10">
+                <div className="flex justify-center mb-4">
+                  <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg">
+                    🚀 Mais Popular
+                  </span>
+                </div>
                 <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
-                    <Brain className="w-10 h-10 text-white" />
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <Brain className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-slate-800 mb-2">
                     Professional
