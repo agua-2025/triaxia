@@ -1,3 +1,7 @@
+# Triaxia - Sistema de Banco de Talentos com IA
+
+Sistema completo de recrutamento inteligente com análise de perfil, match automático e pipeline de contratação.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
