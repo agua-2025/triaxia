@@ -1,4 +1,4 @@
-# Triaxia - Sistema de Banco de Talentos com IA
+## Triaxia - Sistema de Banco de Talentos com IA
 
 Sistema completo de recrutamento inteligente com análise de perfil, match automático e pipeline de contratação.
 
