@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 
 // Configure Edge Runtime
-export const runtime = 'edge'
+export const runtime = 'experimental-edge'
 
 export async function getCurrentTenant(request: NextRequest) {
   // Extract tenant from subdomain or path
