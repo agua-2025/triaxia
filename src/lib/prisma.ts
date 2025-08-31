@@ -40,16 +40,14 @@ export async function createUserForTenant(tenantId: string, data: {
 export async function createProjectForTenant(tenantId: string, data: {
   name: string
   description?: string
-  userId?: string
+  userId: string
 }) {
   return prisma.project.create({
     data: {
       name: data.name,
       description: data.description,
       tenantId,
-      // If userId is not provided, we'll need to get it from the session
-      // For now, we'll make it optional and handle it in the API route
-      ...(data.userId && { userId: data.userId })
+      userId: data.userId
     }
   })
 }
