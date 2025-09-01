@@ -1,10 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Keep Prisma in Node.js runtime
-    serverComponentsExternalPackages: ['@prisma/client'],
-  },
+  // Keep Prisma in Node.js runtime
+  serverExternalPackages: ['@prisma/client'],
 }
 
 export default nextConfig
