@@ -37,8 +37,8 @@ export default function Home() {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <Brain className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-              Triaxia
+            <span className="text-2xl font-bold text-slate-800 tracking-wide">
+              Triax<span className="text-blue-600 bg-blue-100 px-1 rounded ml-1">IA</span>
             </span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
@@ -85,7 +85,9 @@ export default function Home() {
           </div>
           
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight tracking-tight">
-            TRIAXIA
+            <span className="text-white">
+               Triax<span className="text-blue-400 bg-blue-900/30 px-2 rounded ml-1">IA</span>
+             </span>
             <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mt-2">
               DOMINA
             </span>
@@ -330,7 +332,10 @@ export default function Home() {
                   <Brain className="w-12 h-12 text-white" />
                 </div>
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                  TRIAXIA NEURAL CORE
+                  <span className="text-white">
+                     Triax<span className="text-cyan-400 bg-cyan-900/30 px-1 rounded ml-1">IA</span>
+                   </span>
+                  <span className="text-cyan-400"> NEURAL CORE</span>
                 </h3>
                 <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
                   O primeiro sistema de RH com <span className="text-cyan-400 font-medium">Consciência Artificial</span> 
@@ -511,71 +516,71 @@ export default function Home() {
       </section>
 
       {/* Extraordinary Results Section */}
-      <section className="py-20 bg-gradient-to-br from-black via-slate-900 to-indigo-950 relative overflow-hidden">
-        {/* Dynamic Background */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
+        {/* Subtle Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-[500px] h-[500px] bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-[300px] h-[300px] bg-gradient-to-r from-blue-100/30 to-cyan-100/30 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-10 right-10 w-[250px] h-[250px] bg-gradient-to-r from-emerald-100/30 to-green-100/30 rounded-full blur-2xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-r from-gray-100/20 to-blue-100/20 rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 backdrop-blur-sm rounded-full border border-emerald-400/30 mb-6">
-              <Trophy className="w-5 h-5 mr-2 text-emerald-400" />
-              <span className="text-base font-bold text-emerald-300 tracking-wide">
-                🏆 RESULTADOS EXTRAORDINÁRIOS COMPROVADOS
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-100/50 to-cyan-100/50 backdrop-blur-sm rounded-full border border-blue-200/50 mb-6">
+              <Trophy className="w-5 h-5 mr-2 text-blue-600" />
+              <span className="text-base font-bold text-blue-700 tracking-wide">
+                🏆 RESULTADOS COMPROVADOS
               </span>
             </div>
 
-            <h2 className="text-4xl md:text-6xl font-black mb-6 text-white leading-tight">
-              DOMINAMOS O
-              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent block">
-                IMPOSSÍVEL
+            <h2 className="text-4xl md:text-6xl font-black mb-6 text-gray-800 leading-tight">
+              LIDERAMOS A
+              <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 bg-clip-text text-transparent block">
+                INOVAÇÃO
               </span>
             </h2>
-            <p className="text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-medium">
-              Enquanto outros prometem melhorias, nós
-              <span className="text-emerald-400"> REVOLUCIONAMOS COMPLETAMENTE </span>
-              o mercado de trabalho mundial
+            <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed font-medium">
+              Transformamos processos de recrutamento com
+              <span className="text-blue-600 font-semibold"> TECNOLOGIA AVANÇADA </span>
+              e resultados mensuráveis
             </p>
           </div>
 
           {/* Global Impact Stats */}
           <div className="grid lg:grid-cols-4 gap-6 mb-16">
-            <div className="group relative bg-gradient-to-br from-slate-800/80 to-emerald-900/80 backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-6 hover:border-emerald-400/60 transition-all duration-300 hover:scale-105 text-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="group relative bg-white/95 backdrop-blur-sm border border-blue-200 rounded-2xl p-6 hover:border-blue-300 transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 to-emerald-50/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
               <div className="relative z-10">
-                <div className="text-3xl font-black text-emerald-400 mb-2">2.847</div>
-                <div className="text-gray-300 font-bold text-base">Empresas Globais</div>
-                <div className="text-emerald-400 text-xs font-medium mt-1">Dominando mercados</div>
+                <div className="text-4xl font-black text-blue-700 mb-3">150+</div>
+                <div className="text-slate-800 font-bold text-base mb-1">Empresas Atendidas</div>
+                <div className="text-blue-600 text-sm font-medium">Crescimento sustentável</div>
               </div>
             </div>
 
-            <div className="group relative bg-gradient-to-br from-slate-800/80 to-cyan-900/80 backdrop-blur-sm border border-cyan-500/30 rounded-2xl p-6 hover:border-cyan-400/60 transition-all duration-300 hover:scale-105 text-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="group relative bg-white/95 backdrop-blur-sm border border-cyan-200 rounded-2xl p-6 hover:border-cyan-300 transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/80 to-blue-50/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
               <div className="relative z-10">
-                <div className="text-3xl font-black text-cyan-400 mb-2">847.392</div>
-                <div className="text-gray-300 font-bold text-base">Contratações Perfeitas</div>
-                <div className="text-cyan-400 text-xs font-medium mt-1">Zero erros de matching</div>
+                <div className="text-4xl font-black text-cyan-700 mb-3">12.500+</div>
+                <div className="text-slate-800 font-bold text-base mb-1">Contratações Realizadas</div>
+                <div className="text-cyan-600 text-sm font-medium">95% de assertividade</div>
               </div>
             </div>
 
-            <div className="group relative bg-gradient-to-br from-slate-800/80 to-purple-900/80 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6 hover:border-purple-400/60 transition-all duration-300 hover:scale-105 text-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="group relative bg-white/95 backdrop-blur-sm border border-emerald-200 rounded-2xl p-6 hover:border-emerald-300 transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/80 to-green-50/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
               <div className="relative z-10">
-                <div className="text-3xl font-black text-purple-400 mb-2">R$ 2.8B</div>
-                <div className="text-gray-300 font-bold text-base">Economia Gerada</div>
-                <div className="text-purple-400 text-xs font-medium mt-1">Para nossos clientes</div>
+                <div className="text-4xl font-black text-emerald-700 mb-3">R$ 8.5M</div>
+                <div className="text-slate-800 font-bold text-base mb-1">Economia Gerada</div>
+                <div className="text-emerald-600 text-sm font-medium">Para nossos clientes</div>
               </div>
             </div>
 
-            <div className="group relative bg-gradient-to-br from-slate-800/80 to-pink-900/80 backdrop-blur-sm border border-pink-500/30 rounded-2xl p-6 hover:border-pink-400/60 transition-all duration-300 hover:scale-105 text-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="group relative bg-white/95 backdrop-blur-sm border border-purple-200 rounded-2xl p-6 hover:border-purple-300 transition-all duration-300 hover:scale-105 hover:shadow-xl text-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 to-indigo-50/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
               <div className="relative z-10">
-                <div className="text-3xl font-black text-pink-400 mb-2">97.3%</div>
-                <div className="text-gray-300 font-bold text-base">Taxa de Sucesso</div>
-                <div className="text-pink-400 text-xs font-medium mt-1">Impossível de igualar</div>
+                <div className="text-4xl font-black text-purple-700 mb-3">92%</div>
+                <div className="text-slate-800 font-bold text-base mb-1">Taxa de Sucesso</div>
+                <div className="text-purple-600 text-sm font-medium">Acima da média do mercado</div>
               </div>
             </div>
           </div>
@@ -782,146 +787,144 @@ export default function Home() {
       </section>
 
       {/* Exclusive Access Section */}
-      <section className="py-24 bg-gradient-to-br from-black via-red-950 to-orange-950 relative overflow-hidden">
-        {/* Dramatic Background Effects */}
+      <section className="py-24 bg-gradient-to-br from-orange-50 via-white to-red-50 relative overflow-hidden">
+        {/* Subtle Background Effects */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-red-500/10 via-orange-500/10 to-yellow-500/10 animate-pulse"></div>
-          <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%23ff6b35%22%20fill-opacity%3D%220.1%22%3E%3Cpolygon%20points%3D%2230%2C0%2040%2C20%2030%2C40%2020%2C20%22/%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+          <div className="absolute top-20 left-20 w-[300px] h-[300px] bg-gradient-to-r from-orange-100/30 to-red-100/30 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-20 right-20 w-[250px] h-[250px] bg-gradient-to-r from-red-100/30 to-pink-100/30 rounded-full blur-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-50/50 to-red-50/50"></div>
         </div>
 
         <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
           {/* Urgency Banner */}
           <div className="mb-12">
-            <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-600/90 to-orange-600/90 backdrop-blur-sm rounded-full border-2 border-red-400/50 mb-8 animate-pulse">
-              <Crown className="w-8 h-8 mr-4 text-yellow-300" />
-              <span className="text-xl font-black text-white tracking-wider">
-                🔥 ACESSO EXCLUSIVO LIMITADO - APENAS 47 VAGAS RESTANTES
+            <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-100/80 to-red-100/80 backdrop-blur-sm rounded-full border-2 border-orange-200/60 mb-8">
+              <Crown className="w-8 h-8 mr-4 text-orange-600" />
+              <span className="text-xl font-black text-gray-800 tracking-wider">
+                👑 ACESSO PREMIUM LIMITADO
               </span>
             </div>
           </div>
 
           {/* Main Title */}
           <div className="mb-16">
-            <h2 className="text-7xl md:text-9xl font-black mb-8 text-white leading-none">
-              ELITE
-              <span className="bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent block">
-                MUNDIAL
+            <h2 className="text-7xl md:text-9xl font-black mb-8 text-gray-800 leading-none">
+              PLANO
+              <span className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent block">
+                PREMIUM
               </span>
             </h2>
-            <p className="text-3xl md:text-4xl text-gray-200 max-w-5xl mx-auto leading-tight font-bold">
-              Apenas
-              <span className="text-red-400"> 0.01% das empresas globais </span>
-              têm acesso ao
-              <span className="text-orange-400"> TRIAXIA SUPREMO</span>
+            <p className="text-3xl md:text-4xl text-gray-600 max-w-5xl mx-auto leading-tight font-bold">
+              Para empresas que buscam
+              <span className="text-orange-600"> RESULTADOS EXCEPCIONAIS </span>
+              com nossa
+              <span className="text-red-600"> TECNOLOGIA AVANÇADA</span>
             </p>
           </div>
 
           {/* Exclusivity Cards */}
           <div className="grid lg:grid-cols-3 gap-8 mb-20">
             {/* Card 1 - Limited Access */}
-            <div className="group relative bg-gradient-to-br from-red-900/90 to-orange-900/90 backdrop-blur-sm border-2 border-red-500/50 rounded-3xl p-10 hover:border-red-400/80 transition-all duration-500 hover:scale-105 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-orange-500"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="group relative bg-white/80 backdrop-blur-sm border-2 border-orange-200/60 rounded-3xl p-10 hover:border-orange-300/80 transition-all duration-500 hover:scale-105 overflow-hidden shadow-lg">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-red-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-100/20 to-red-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Lock className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4">ACESSO RESTRITO</h3>
-                <p className="text-gray-300 text-lg leading-relaxed">
-                  Apenas empresas com
-                  <span className="text-red-400 font-bold"> faturamento superior a R$ 10M </span>
+                <h3 className="text-3xl font-black text-gray-800 mb-4">ACESSO PREMIUM</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Para empresas com
+                  <span className="text-orange-600 font-bold"> faturamento superior a R$ 5M </span>
                   ou
-                  <span className="text-orange-400 font-bold"> crescimento acima de 500% </span>
-                  são elegíveis
+                  <span className="text-red-600 font-bold"> crescimento acima de 100% </span>
+                  ao ano
                 </p>
-                <div className="mt-6 p-4 bg-red-500/20 rounded-xl border border-red-500/30">
-                  <div className="text-2xl font-black text-red-400">APENAS 47</div>
-                  <div className="text-gray-300 font-bold">vagas disponíveis</div>
+                <div className="mt-6 p-4 bg-orange-100/60 rounded-xl border border-orange-200/60">
+                  <div className="text-2xl font-black text-orange-600">LIMITADO</div>
+                  <div className="text-gray-700 font-bold">vagas disponíveis</div>
                 </div>
               </div>
             </div>
 
             {/* Card 2 - Global Dominance */}
-            <div className="group relative bg-gradient-to-br from-orange-900/90 to-yellow-900/90 backdrop-blur-sm border-2 border-orange-500/50 rounded-3xl p-10 hover:border-orange-400/80 transition-all duration-500 hover:scale-105 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-yellow-500"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="group relative bg-white/80 backdrop-blur-sm border-2 border-orange-200/60 rounded-3xl p-10 hover:border-orange-300/80 transition-all duration-500 hover:scale-105 overflow-hidden shadow-lg">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-red-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-100/20 to-red-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Globe className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4">DOMÍNIO GLOBAL</h3>
-                <p className="text-gray-300 text-lg leading-relaxed">
+                <h3 className="text-3xl font-black text-gray-800 mb-4">ALCANCE GLOBAL</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
                   Tecnologia
-                  <span className="text-orange-400 font-bold"> 10 anos à frente </span>
-                  da concorrência.
-                  <span className="text-yellow-400 font-bold"> Impossível de replicar </span>
-                  por outros sistemas
+                  <span className="text-orange-600 font-bold"> inovadora </span>
+                  com recursos
+                  <span className="text-red-600 font-bold"> exclusivos </span>
+                  para grandes empresas
                 </p>
-                <div className="mt-6 p-4 bg-orange-500/20 rounded-xl border border-orange-500/30">
-                  <div className="text-2xl font-black text-orange-400">10 ANOS</div>
-                  <div className="text-gray-300 font-bold">de vantagem tecnológica</div>
+                <div className="mt-6 p-4 bg-orange-100/60 rounded-xl border border-orange-200/60">
+                  <div className="text-2xl font-black text-orange-600">AVANÇADA</div>
+                  <div className="text-gray-700 font-bold">tecnologia proprietária</div>
                 </div>
               </div>
             </div>
 
             {/* Card 3 - Ultimate ROI */}
-            <div className="group relative bg-gradient-to-br from-yellow-900/90 to-red-900/90 backdrop-blur-sm border-2 border-yellow-500/50 rounded-3xl p-10 hover:border-yellow-400/80 transition-all duration-500 hover:scale-105 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-500 to-red-500"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="group relative bg-white/80 backdrop-blur-sm border-2 border-red-200/60 rounded-3xl p-10 hover:border-red-300/80 transition-all duration-500 hover:scale-105 overflow-hidden shadow-lg">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-pink-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-red-100/20 to-pink-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <TrendingUp className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4">ROI SUPREMO</h3>
-                <p className="text-gray-300 text-lg leading-relaxed">
+                <h3 className="text-3xl font-black text-gray-800 mb-4">ROI ELEVADO</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
                   Retorno médio de
-                  <span className="text-yellow-400 font-bold"> +2.847% no primeiro ano</span>.
-                  Empresas elite economizam
-                  <span className="text-red-400 font-bold"> R$ 50M+ anualmente</span>
+                  <span className="text-red-600 font-bold"> +180% no primeiro ano</span>.
+                  Empresas premium economizam
+                  <span className="text-orange-600 font-bold"> R$ 2M+ anualmente</span>
                 </p>
-                <div className="mt-6 p-4 bg-yellow-500/20 rounded-xl border border-yellow-500/30">
-                  <div className="text-2xl font-black text-yellow-400">+2.847%</div>
-                  <div className="text-gray-300 font-bold">ROI médio anual</div>
+                <div className="mt-6 p-4 bg-red-100/60 rounded-xl border border-red-200/60">
+                  <div className="text-2xl font-black text-red-600">+180%</div>
+                  <div className="text-gray-700 font-bold">ROI médio anual</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Scarcity Countdown */}
+          {/* Premium Benefits */}
           <div className="relative mb-16">
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-orange-500/20 to-yellow-500/20 rounded-3xl blur-2xl animate-pulse"></div>
-            <div className="relative bg-gradient-to-br from-slate-900/95 to-red-900/95 backdrop-blur-sm border-2 border-red-500/50 rounded-3xl p-12">
+            <div className="relative bg-white/90 backdrop-blur-sm border-2 border-orange-200/60 rounded-3xl p-12 shadow-lg">
               <div className="mb-8">
-                <h3 className="text-5xl font-black text-white mb-6">
-                  ⏰ ÚLTIMAS HORAS
+                <h3 className="text-5xl font-black text-gray-800 mb-6">
+                  💎 BENEFÍCIOS PREMIUM
                 </h3>
-                <p className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                  Esta oportunidade
-                  <span className="text-red-400 font-bold"> NUNCA MAIS </span>
-                  será oferecida.
-                  <span className="text-orange-400 font-bold"> 47 empresas </span>
-                  vão dominar seus mercados para sempre.
+                <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                  Acesso a recursos
+                  <span className="text-orange-600 font-bold"> EXCLUSIVOS </span>
+                  para empresas que buscam
+                  <span className="text-red-600 font-bold"> EXCELÊNCIA </span>
+                  em recrutamento.
                 </p>
               </div>
 
               <div className="grid md:grid-cols-4 gap-6">
-                <div className="bg-gradient-to-br from-red-500/30 to-orange-500/30 rounded-2xl p-6 border border-red-500/50">
-                  <div className="text-4xl font-black text-red-400 mb-2">23</div>
-                  <div className="text-gray-300 font-bold">Horas</div>
+                <div className="bg-gradient-to-br from-orange-100/60 to-red-100/60 rounded-2xl p-6 border border-orange-200/60">
+                  <div className="text-4xl font-black text-orange-600 mb-2">24/7</div>
+                  <div className="text-gray-700 font-bold">Suporte</div>
                 </div>
-                <div className="bg-gradient-to-br from-orange-500/30 to-yellow-500/30 rounded-2xl p-6 border border-orange-500/50">
-                  <div className="text-4xl font-black text-orange-400 mb-2">47</div>
-                  <div className="text-gray-300 font-bold">Vagas</div>
+                <div className="bg-gradient-to-br from-red-100/60 to-pink-100/60 rounded-2xl p-6 border border-red-200/60">
+                  <div className="text-4xl font-black text-red-600 mb-2">30</div>
+                  <div className="text-gray-700 font-bold">Dias Teste</div>
                 </div>
-                <div className="bg-gradient-to-br from-yellow-500/30 to-red-500/30 rounded-2xl p-6 border border-yellow-500/50">
-                  <div className="text-4xl font-black text-yellow-400 mb-2">∞</div>
-                  <div className="text-gray-300 font-bold">Vantagem</div>
+                <div className="bg-gradient-to-br from-pink-100/60 to-purple-100/60 rounded-2xl p-6 border border-pink-200/60">
+                  <div className="text-4xl font-black text-pink-600 mb-2">100%</div>
+                  <div className="text-gray-700 font-bold">Garantia</div>
                 </div>
-                <div className="bg-gradient-to-br from-red-500/30 to-orange-500/30 rounded-2xl p-6 border border-red-500/50">
-                  <div className="text-4xl font-black text-red-400 mb-2">0</div>
-                  <div className="text-gray-300 font-bold">Chances Futuras</div>
+                <div className="bg-gradient-to-br from-purple-100/60 to-orange-100/60 rounded-2xl p-6 border border-purple-200/60">
+                  <div className="text-4xl font-black text-purple-600 mb-2">∞</div>
+                  <div className="text-gray-700 font-bold">Atualizações</div>
                 </div>
               </div>
             </div>
@@ -929,24 +932,23 @@ export default function Home() {
 
           {/* Final CTA */}
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/30 via-orange-500/30 to-yellow-500/30 rounded-3xl blur-xl animate-pulse"></div>
-            <div className="relative bg-gradient-to-r from-red-600/90 to-orange-600/90 backdrop-blur-sm rounded-3xl p-12 border-2 border-red-400/50">
-              <h3 className="text-6xl font-black text-white mb-6">
-                SEJA ELITE
+            <div className="relative bg-gradient-to-r from-orange-100/80 to-red-100/80 backdrop-blur-sm rounded-3xl p-12 border-2 border-orange-200/60 shadow-lg">
+              <h3 className="text-6xl font-black text-gray-800 mb-6">
+                COMECE AGORA
               </h3>
-              <p className="text-2xl text-gray-200 mb-8 max-w-4xl mx-auto">
-                Enquanto seus concorrentes lutam por sobrevivência,
-                <span className="text-yellow-300 font-bold"> VOCÊ DOMINARÁ COMPLETAMENTE </span>
-                seu mercado
+              <p className="text-2xl text-gray-600 mb-8 max-w-4xl mx-auto">
+                Transforme seu processo de recrutamento com
+                <span className="text-orange-600 font-bold"> TECNOLOGIA AVANÇADA </span>
+                e resultados comprovados
               </p>
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <button className="group relative bg-gradient-to-r from-yellow-500 to-red-500 text-black px-12 py-6 rounded-2xl font-black text-xl hover:scale-110 transition-all duration-300 border-2 border-yellow-400 shadow-2xl">
-                  <span className="relative z-10">🔥 GARANTIR MINHA VAGA ELITE</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                <button className="group relative bg-gradient-to-r from-orange-500 to-red-500 text-white px-12 py-6 rounded-2xl font-black text-xl hover:scale-105 transition-all duration-300 border-2 border-orange-400 shadow-xl">
+                  <span className="relative z-10">🚀 SOLICITAR DEMONSTRAÇÃO</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                 </button>
                 <div className="text-center">
-                  <div className="text-red-400 font-black text-lg">APENAS 47 VAGAS</div>
-                  <div className="text-gray-300 text-sm">Oportunidade única na história</div>
+                  <div className="text-orange-600 font-black text-lg">TESTE GRATUITO</div>
+                  <div className="text-gray-600 text-sm">30 dias sem compromisso</div>
                 </div>
               </div>
             </div>
@@ -1225,16 +1227,32 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-8 text-slate-800">
             Sobre o
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent block">
-              Triaxia
+            <span className="text-slate-800 block tracking-wide">
+              Triax<span className="text-blue-600 bg-blue-100 px-1 rounded ml-1 font-semibold">IA</span>
             </span>
           </h2>
-          <p className="text-xl text-slate-600 leading-relaxed mb-8">
-            Somos pioneiros em inteligência artificial aplicada ao recrutamento.
-            Nossa missão é revolucionar como empresas encontram e conectam
-            talentos, eliminando barreiras e criando oportunidades através da
-            tecnologia.
-          </p>
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-8">
+              <h3 className="text-2xl font-bold text-slate-800 mb-4 text-center">
+                 O que significa <span className="text-blue-600">Triax<span className="text-blue-700 bg-blue-100 px-1 rounded">IA</span></span>?
+               </h3>
+               <p className="text-lg text-slate-700 leading-relaxed text-center max-w-3xl mx-auto">
+                 <span className="font-semibold text-blue-600">Triax</span> refere-se à <strong>triagem</strong> inteligente de currículos e candidatos, 
+                 enquanto <span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 rounded">IA</span> representa 
+                 <strong>Inteligência Artificial</strong>. Juntos formam <strong>TriaxIA</strong> - 
+                 a solução que revoluciona o recrutamento através de 
+                 <span className="text-blue-700 font-medium">análise automatizada de currículos</span>, 
+                 <span className="text-blue-700 font-medium">matching inteligente</span> e 
+                 <span className="text-blue-700 font-medium">seleção por IA</span>.
+               </p>
+            </div>
+            <p className="text-xl text-slate-600 leading-relaxed">
+              Somos pioneiros em inteligência artificial aplicada ao recrutamento.
+              Nossa missão é revolucionar como empresas encontram e conectam
+              talentos, eliminando barreiras e criando oportunidades através da
+              tecnologia avançada.
+            </p>
+          </div>
           <div className="grid md:grid-cols-3 gap-8 mt-12">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 mb-2">95%</div>
@@ -1262,12 +1280,12 @@ export default function Home() {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                 <Brain className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
-                Triaxia
+              <span className="text-xl font-bold text-slate-800 tracking-wide">
+                Triax<span className="text-blue-600 bg-blue-100 px-1 rounded ml-1">IA</span>
               </span>
             </div>
             <div className="text-slate-500 text-sm">
-              © 2025 Triaxia. Todos os direitos reservados.
+              © 2025 <span className="text-slate-700 font-semibold">Triax<span className="text-blue-600">IA</span></span>. Todos os direitos reservados.
             </div>
           </div>
         </div>
