@@ -2,8 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 
-// Configure Edge Runtime
-export const runtime = 'experimental-edge'
+// Configure Edge Runtime - Disabled for Stripe compatibility
+// export const runtime = 'experimental-edge'
 
 export async function getCurrentTenant(request: NextRequest) {
   // Extract tenant from subdomain or path
@@ -32,6 +32,11 @@ export async function getCurrentTenant(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware for Stripe webhook and checkout routes
+  if (request.nextUrl.pathname.startsWith('/api/stripe/')) {
+    return NextResponse.next()
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })

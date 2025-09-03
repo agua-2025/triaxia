@@ -51,13 +51,22 @@ export default function PricingPage() {
         }),
       })
 
-      const { sessionId, url } = await response.json()
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao criar sessão de checkout')
+      }
+
+      const { sessionId, url } = data
 
       if (url) {
+        // Redirect to Stripe Checkout URL
         window.location.href = url
-      } else {
+      } else if (sessionId) {
         // Fallback: redirect directly to Stripe Checkout
-        window.location.href = `https://checkout.stripe.com/pay/${sessionId}`
+        window.location.href = `https://checkout.stripe.com/c/pay/${sessionId}`
+      } else {
+        throw new Error('Nenhuma URL de checkout foi retornada')
       }
     } catch (error) {
       console.error('Erro ao iniciar checkout:', error)

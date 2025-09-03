@@ -4,7 +4,10 @@ import { headers } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Iniciando criação de sessão de checkout...')
+    
     if (!stripe) {
+      console.error('Stripe não está configurado')
       return NextResponse.json(
         { error: 'Stripe não está configurado' },
         { status: 500 }
@@ -29,7 +32,9 @@ export async function POST(request: NextRequest) {
 
     const selectedPlan = STRIPE_PLANS[plan as StripePlan]
     const headersList = await headers()
-    const origin = headersList.get('origin') || 'http://localhost:3000'
+    const origin = headersList.get('origin') || headersList.get('host') || process.env.APP_URL || 'http://localhost:3000'
+    
+    console.log('Dados recebidos:', { plan, tenantSlug, userEmail, origin })
 
     // Create or retrieve customer
     let customer
@@ -95,6 +100,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout session
+    console.log('Criando sessão de checkout...')
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       payment_method_types: ['card'],
@@ -126,6 +132,16 @@ export async function POST(request: NextRequest) {
         name: 'auto'
       }
     })
+
+    console.log('Sessão criada com sucesso:', { sessionId: session.id, url: session.url })
+
+    if (!session.url) {
+      console.error('URL da sessão não foi gerada')
+      return NextResponse.json(
+        { error: 'Erro ao gerar URL de checkout' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ 
       sessionId: session.id,
