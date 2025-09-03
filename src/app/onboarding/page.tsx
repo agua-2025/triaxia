@@ -14,8 +14,8 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const searchParams = useSearchParams()
   const router = useRouter()
-  const sessionId = searchParams.get('session_id')
-  const tenantSlug = searchParams.get('tenant')
+  const sessionId = searchParams?.get('session_id')
+  const tenantSlug = searchParams?.get('tenant')
 
   useEffect(() => {
     if (sessionId && tenantSlug) {

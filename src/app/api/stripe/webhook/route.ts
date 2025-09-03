@@ -108,6 +108,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     })
 
     if (!existingTenant) {
+      // Verificar se customer e subscription existem
+      if (!session.customer || !session.subscription) {
+        console.error('Session não possui customer ou subscription')
+        return
+      }
+      
       // Criar novo tenant
       await prisma.tenant.create({
         data: {
@@ -115,9 +121,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           slug: tenantSlug,
           domain: `${tenantSlug}.triaxia.com`,
           plan,
-          subscriptionStatus: 'trialing',
-          stripeCustomerId: session.customer as string,
-          stripeSubscriptionId: session.subscription as string,
+          status: 'trial',
+          customerId: session.customer as string,
+          subscriptionId: session.subscription as string,
           trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 dias
           settings: {
             onboardingCompleted: false,
@@ -128,14 +134,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
       console.log(`Tenant criado: ${tenantSlug}`)
     } else {
+      // Verificar se customer e subscription existem
+      if (!session.customer || !session.subscription) {
+        console.error('Session não possui customer ou subscription')
+        return
+      }
+      
       // Atualizar tenant existente
       await prisma.tenant.update({
         where: { slug: tenantSlug },
         data: {
           plan,
-          subscriptionStatus: 'trialing',
-          stripeCustomerId: session.customer as string,
-          stripeSubscriptionId: session.subscription as string,
+          status: 'trial',
+          customerId: session.customer as string,
+          subscriptionId: session.subscription as string,
           trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
         }
       })
@@ -156,8 +168,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     await prisma.tenant.update({
       where: { slug: tenantSlug },
       data: {
-        subscriptionStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
-        stripeSubscriptionId: subscription.id
+        status: subscription.status === 'trialing' ? 'trial' : 'active',
+        subscriptionId: subscription.id
       }
     })
 
@@ -173,35 +185,35 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   if (!tenantSlug) return
 
   try {
-    let subscriptionStatus: string
+    let status: string
     
     switch (subscription.status) {
       case 'active':
-        subscriptionStatus = 'active'
+        status = 'active'
         break
       case 'trialing':
-        subscriptionStatus = 'trialing'
+        status = 'trial'
         break
       case 'past_due':
-        subscriptionStatus = 'past_due'
+        status = 'suspended'
         break
       case 'canceled':
       case 'unpaid':
-        subscriptionStatus = 'canceled'
+        status = 'cancelled'
         break
       default:
-        subscriptionStatus = subscription.status
+        status = 'active'
     }
 
     await prisma.tenant.update({
       where: { slug: tenantSlug },
       data: {
-        subscriptionStatus,
+        status,
         trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null
       }
     })
 
-    console.log(`Assinatura atualizada para tenant: ${tenantSlug} - Status: ${subscriptionStatus}`)
+    console.log(`Assinatura atualizada para tenant: ${tenantSlug} - Status: ${status}`)
   } catch (error) {
     console.error('Erro ao processar atualização de assinatura:', error)
   }
@@ -216,7 +228,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     await prisma.tenant.update({
       where: { slug: tenantSlug },
       data: {
-        subscriptionStatus: 'canceled'
+        status: 'cancelled'
       }
     })
 
@@ -227,7 +239,18 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
-  const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string)
+  if (!stripe) {
+    console.error('Stripe não está inicializado')
+    return
+  }
+  
+  const subscriptionId = (invoice as any).subscription
+  if (!subscriptionId) {
+    console.error('Invoice não possui subscription associada')
+    return
+  }
+  
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId as string)
   const { tenantSlug } = subscription.metadata || {}
   
   if (!tenantSlug) return
@@ -236,7 +259,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     await prisma.tenant.update({
       where: { slug: tenantSlug },
       data: {
-        subscriptionStatus: 'active'
+        status: 'active'
       }
     })
 
@@ -247,7 +270,18 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string)
+  if (!stripe) {
+    console.error('Stripe não está inicializado')
+    return
+  }
+  
+  const subscriptionId = (invoice as any).subscription
+  if (!subscriptionId) {
+    console.error('Invoice não possui subscription associada')
+    return
+  }
+  
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId as string)
   const { tenantSlug } = subscription.metadata || {}
   
   if (!tenantSlug) return
@@ -256,7 +290,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     await prisma.tenant.update({
       where: { slug: tenantSlug },
       data: {
-        subscriptionStatus: 'past_due'
+        status: 'suspended'
       }
     })
 

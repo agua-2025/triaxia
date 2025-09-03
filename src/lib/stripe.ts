@@ -14,12 +14,12 @@ if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
 
 // Server-side Stripe instance (only initialize on server)
 export const stripe = isServer ? new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-08-27.basil',
   typescript: true,
 }) : null
 
 // Client-side Stripe instance
-let stripePromise: Promise<Stripe | null>
+let stripePromise: ReturnType<typeof loadStripe>
 export const getStripe = () => {
   if (!stripePromise) {
     stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)

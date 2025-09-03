@@ -28,7 +28,7 @@ export default function PricingPage() {
   const [tenantSlug, setTenantSlug] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const canceled = searchParams.get('canceled')
+  const canceled = searchParams?.get('canceled')
 
   const handleCheckout = async (plan: StripePlan) => {
     if (!userEmail || !tenantSlug) {
@@ -56,8 +56,8 @@ export default function PricingPage() {
       if (url) {
         window.location.href = url
       } else {
-        const stripe = await getStripe()
-        await stripe?.redirectToCheckout({ sessionId })
+        // Fallback: redirect directly to Stripe Checkout
+        window.location.href = `https://checkout.stripe.com/pay/${sessionId}`
       }
     } catch (error) {
       console.error('Erro ao iniciar checkout:', error)
