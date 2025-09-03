@@ -87,9 +87,9 @@ export default function Home() {
             >
               Cases
             </a>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2 rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+            <a href="/pricing" className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2 rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 inline-block">
               Começar Agora
-            </button>
+            </a>
           </div>
 
           <button
@@ -137,12 +137,12 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="group bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
+                <a href="/pricing" className="group bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 inline-block">
                   <span className="flex items-center space-x-2">
                     <span>Iniciar Revolução</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </span>
-                </button>
+                </a>
 
                 <button className="group border border-gray-600 px-8 py-4 rounded-full text-lg font-semibold hover:border-blue-500 hover:bg-blue-500/10 transition-all duration-300">
                   <span className="flex items-center space-x-2">
@@ -1181,9 +1181,9 @@ export default function Home() {
                 </li>
               </ul>
 
-              <button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 group-hover:scale-105">
+              <a href="/pricing" className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 group-hover:scale-105 inline-block text-center">
                 Começar Teste Grátis
-              </button>
+              </a>
             </div>
 
             {/* Professional Plan - Featured */}
@@ -1247,9 +1247,9 @@ export default function Home() {
                 </li>
               </ul>
 
-              <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 group-hover:scale-105">
+              <a href="/pricing" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 group-hover:scale-105 inline-block text-center">
                 Começar Teste Grátis
-              </button>
+              </a>
             </div>
 
             {/* Enterprise Plan */}
@@ -1584,9 +1584,9 @@ export default function Home() {
               Junte-se às empresas que já transformaram seu recrutamento com IA
               de última geração
             </p>
-            <button className="bg-gradient-to-r from-blue-600 to-purple-600 px-12 py-4 rounded-full text-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
+            <a href="/pricing" className="bg-gradient-to-r from-blue-600 to-purple-600 px-12 py-4 rounded-full text-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 inline-block">
               Começar Transformação
-            </button>
+            </a>
           </div>
         </div>
       </section>

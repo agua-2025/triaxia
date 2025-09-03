@@ -20,6 +20,32 @@ model Tenant {
   name      String
   slug      String   @unique
   domain    String?  @unique
+  
+  // Branding & Customization
+  logo      String?  // URL to logo image
+  favicon   String?  // URL to favicon
+  primaryColor   String @default("#3B82F6") // Primary brand color
+  secondaryColor String @default("#1E40AF") // Secondary brand color
+  accentColor    String @default("#10B981") // Accent color
+  
+  // Company Information
+  description String?
+  website     String?
+  email       String?
+  phone       String?
+  address     String?
+  
+  // Subscription & Billing
+  plan           String @default("starter") // starter, professional, enterprise
+  status         String @default("trial")   // trial, active, suspended, cancelled
+  trialEndsAt    DateTime?
+  subscriptionId String?  // Stripe subscription ID
+  customerId     String?  // Stripe customer ID
+  
+  // Configuration
+  settings Json @default("{}") // JSON for flexible settings
+  
+  // Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

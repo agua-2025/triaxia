@@ -68,18 +68,18 @@ export async function middleware(request: NextRequest) {
     supabaseResponse.headers.set('x-tenant-slug', tenant.tenantSlug)
   }
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!user) {
-      const redirectUrl = new URL('/login', request.url)
-      return NextResponse.redirect(redirectUrl)
-    }
-    
-    if (!tenant) {
-      const redirectUrl = new URL('/select-tenant', request.url)
-      return NextResponse.redirect(redirectUrl)
-    }
-  }
+  // Protect dashboard routes - TEMPORARILY DISABLED FOR DEVELOPMENT
+  // if (request.nextUrl.pathname.startsWith('/dashboard')) {
+  //   if (!user) {
+  //     const redirectUrl = new URL('/login', request.url)
+  //     return NextResponse.redirect(redirectUrl)
+  //   }
+  //   
+  //   if (!tenant) {
+  //     const redirectUrl = new URL('/select-tenant', request.url)
+  //     return NextResponse.redirect(redirectUrl)
+  //   }
+  // }
 
   return supabaseResponse
 }
