@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const selectedPlan = STRIPE_PLANS[plan as StripePlan]
-    const headersList = headers()
+    const headersList = await headers()
     const origin = headersList.get('origin') || 'http://localhost:3000'
 
     // Create or retrieve customer
