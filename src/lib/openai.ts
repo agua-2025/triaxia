@@ -31,7 +31,10 @@ export async function generateText(prompt: string, options?: {
 
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
-    console.error('OpenAI API Error:', error)
+    // Log error in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error('OpenAI API Error:', error)
+    }
     throw new Error('Failed to generate AI response')
   }
 }

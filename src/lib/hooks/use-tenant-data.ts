@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useTenant } from '../tenant-context'
-import { getUsersByTenant, getProjectsByTenant } from '../prisma'
 
 export function useTenantUsers() {
   const { tenantId } = useTenant()
