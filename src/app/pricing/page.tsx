@@ -115,9 +115,18 @@ export default function PricingPage() {
 
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-            Escolha o plano ideal para sua empresa
+        <div className="text-center mb-20">
+          <div className="mb-8">
+            <span className="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold mb-6">
+              ✨ Teste grátis por 14 dias
+            </span>
+          </div>
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-8 leading-tight">
+            Transforme seu RH com
+            <br />
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Inteligência Artificial
+            </span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Comece com 14 dias grátis. Cancele a qualquer momento. Sem
@@ -277,6 +286,78 @@ export default function PricingPage() {
           })}
         </div>
 
+        {/* Value Proposition Section */}
+        <div className="mt-20 mb-16">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-800 mb-6">Por que escolher a Triaxia?</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Mais de 10.000 empresas já transformaram seus processos de recrutamento
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+            <div className="text-center p-8 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                <Zap className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">IA Avançada</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Nossa inteligência artificial analisa currículos, perfis comportamentais e compatibilidade cultural em segundos.
+              </p>
+            </div>
+            
+            <div className="text-center p-8 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                <Building2 className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Economia de Tempo</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Reduza em 80% o tempo gasto na triagem de candidatos. Foque apenas nos melhores perfis.
+              </p>
+            </div>
+            
+            <div className="text-center p-8 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                <Crown className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Resultados Garantidos</h3>
+              <p className="text-gray-600 leading-relaxed">
+                95% de taxa de aprovação nas contratações. Encontre o candidato ideal na primeira tentativa.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Social Proof Section */}
+        <div className="mt-20 mb-16">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-3xl p-12 max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-6">Empresas que confiam na Triaxia</h2>
+              <p className="text-xl text-gray-600">
+                Junte-se a milhares de empresas que já revolucionaram seus processos de RH
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-blue-600 mb-2">95%</div>
+                <p className="text-gray-700 font-semibold mb-2">Taxa de Sucesso</p>
+                <p className="text-gray-600 text-sm">nas contratações realizadas</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-emerald-600 mb-2">80%</div>
+                <p className="text-gray-700 font-semibold mb-2">Redução de Tempo</p>
+                <p className="text-gray-600 text-sm">no processo de triagem</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-purple-600 mb-2">10k+</div>
+                <p className="text-gray-700 font-semibold mb-2">Empresas Ativas</p>
+                <p className="text-gray-600 text-sm">usando nossa plataforma</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* FAQ Section */}
         <div className="mt-20 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-blue-600 bg-clip-text text-transparent text-center mb-12">
@@ -320,6 +401,63 @@ export default function PricingPage() {
                 com total segurança.
               </p>
             </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Posso cancelar quando quiser?</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Claro! Sem fidelidade ou multas. Cancele a qualquer momento e mantenha 
+                acesso até o final do período pago.
+              </p>
+            </div>
+            
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Como funciona a integração?</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Integração rápida em menos de 30 minutos. Conectamos com LinkedIn, Indeed, 
+                seu ATS atual e principais plataformas de RH do mercado.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Final CTA Section */}
+        <div className="mt-24 mb-16">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-3xl p-12 text-center text-white max-w-4xl mx-auto">
+            <h2 className="text-4xl font-bold mb-6">
+              Pronto para revolucionar seu RH?
+            </h2>
+            <p className="text-xl mb-8 text-blue-100">
+              Junte-se a milhares de empresas que já transformaram seus processos de contratação
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3 text-white">
+                <span className="text-sm font-medium">✓ 14 dias grátis</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3 text-white">
+                <span className="text-sm font-medium">✓ Sem cartão de crédito</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl px-6 py-3 text-white">
+                <span className="text-sm font-medium">✓ Suporte especializado</span>
+              </div>
+            </div>
+            <div className="mt-8">
+              <Button 
+                 size="lg" 
+                 className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                 onClick={() => {
+                   const starterPlan = STRIPE_PLANS.find(plan => plan.name === 'Starter');
+                   if (starterPlan) {
+                     handleCheckout(starterPlan);
+                   }
+                 }}
+                 disabled={loading !== null || !userEmail || !tenantSlug}
+               >
+                 {loading ? 'Processando...' : 'Começar teste grátis agora'}
+               </Button>
+            </div>
+            <p className="text-sm text-blue-200 mt-4">
+              Cancele a qualquer momento • Sem compromisso
+            </p>
           </div>
         </div>
       </div>

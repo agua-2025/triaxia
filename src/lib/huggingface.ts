@@ -11,6 +11,7 @@ export const AI_CONFIG = {
   model: process.env.HUGGINGFACE_MODEL ?? 'microsoft/DialoGPT-medium',
   temperature: 0.7,
   max_tokens: 1000,
+  apiUrl: 'https://api-inference.huggingface.co/models/',
 } as const
 
 // AI Helper functions
@@ -31,6 +32,7 @@ export async function generateText(prompt: string, options?: {
     })
 
     return response.generated_text ?? ''
+
   } catch (error) {
     // Log error in development only
     if (process.env.NODE_ENV === 'development') {
