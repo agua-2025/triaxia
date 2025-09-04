@@ -29,7 +29,8 @@ const eslintConfig = [
       "@typescript-eslint/prefer-optional-chain": "warn",
       "prefer-const": "warn",
       "no-var": "error",
-      "no-console": "off"
+      "no-console": "off",
+      "react/no-unescaped-entities": "off"
     },
     ignores: [
       "node_modules/**",
