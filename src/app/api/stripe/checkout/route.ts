@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe, STRIPE_PLANS, StripePlan } from '@/lib/stripe'
 import { headers } from 'next/headers'
 
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Iniciando criação de sessão de checkout...')
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     const selectedPlan = STRIPE_PLANS[plan as StripePlan]
     const headersList = await headers()
-    const origin = headersList.get('origin') ?? headersList.get('host') ?? process.env.APP_URL ?? 'http://localhost:3000'
+    const origin = process.env.APP_URL ?? new URL(request.url).origin
     
     console.log('Dados recebidos:', { plan, tenantSlug, userEmail, origin })
 
@@ -103,7 +105,6 @@ export async function POST(request: NextRequest) {
     console.log('Criando sessão de checkout...')
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
-      payment_method_types: ['card'],
       line_items: [
         {
           price: price.id,
