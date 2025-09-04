@@ -21,7 +21,16 @@ type Body = {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== STRIPE CHECKOUT DEBUG START ===');
+    console.log('Environment variables check:', {
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET',
+      STRIPE_PRICE_STARTER: process.env.STRIPE_PRICE_STARTER || 'NOT SET',
+      STRIPE_PRICE_PROF: process.env.STRIPE_PRICE_PROF || 'NOT SET',
+      STRIPE_PRICE_ENT: process.env.STRIPE_PRICE_ENT || 'NOT SET',
+    });
+
     if (!stripe) {
+      console.error('Stripe instance is null');
       return NextResponse.json(
         { error: 'Stripe não configurado' },
         { status: 500 }
@@ -29,15 +38,22 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as Partial<Body>;
+    console.log('Request body:', body);
+    
     const plan = body?.plan ?? 'starter';
     const tenantSlug = body?.tenantSlug;
     const userEmail = body?.userEmail;
 
+    console.log('Parsed data:', { plan, tenantSlug, userEmail });
+    console.log('Price for plan:', PRICE_BY_PLAN[plan]);
+
     // Validações básicas
     if (!PRICE_BY_PLAN[plan]) {
+      console.error('Invalid plan or missing price ID:', plan);
       return NextResponse.json({ error: 'Plano inválido' }, { status: 400 });
     }
     if (!tenantSlug || !userEmail) {
+      console.error('Missing required data:', { tenantSlug, userEmail });
       return NextResponse.json(
         { error: 'Dados obrigatórios ausentes' },
         { status: 400 }
@@ -53,20 +69,26 @@ export async function POST(request: NextRequest) {
       'http://localhost:3000';
 
     // Busca ou cria o cliente por e-mail
+    console.log('Searching for customer with email:', userEmail);
     const { data: found } = await stripe.customers.list({
       email: userEmail,
       limit: 1,
     });
+    console.log('Found customers:', found.length);
+    
     const customer =
       found[0] ??
       (await stripe.customers.create({
         email: userEmail,
         metadata: { tenantSlug, plan },
       }));
+    console.log('Customer ID:', customer.id);
 
     const priceId = PRICE_BY_PLAN[plan]!;
+    console.log('Using price ID:', priceId);
 
     // Cria a sessão de checkout
+    console.log('Creating checkout session...');
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription', // use 'payment' se for cobrança única
@@ -82,14 +104,17 @@ export async function POST(request: NextRequest) {
       success_url: `${origin}/onboarding?session_id={CHECKOUT_SESSION_ID}&tenant=${tenantSlug}`,
       cancel_url: `${origin}/pricing?canceled=true`,
     });
+    console.log('Session created successfully:', { id: session.id, url: session.url });
 
     if (!session.url) {
+      console.error('Session created but no URL returned');
       return NextResponse.json(
         { error: 'Falha ao gerar URL de checkout' },
         { status: 500 }
       );
     }
 
+    console.log('=== STRIPE CHECKOUT DEBUG END ===');
     return NextResponse.json(
       { sessionId: session.id, url: session.url },
       { status: 200 }
