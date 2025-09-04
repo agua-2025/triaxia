@@ -445,7 +445,7 @@ export default function PricingPage() {
                  size="lg" 
                  className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                  onClick={() => {
-                   const starterPlan = PLANS.find(plan => plan.name === 'Starter');
+                   const starterPlan = Object.values(PLANS).find(plan => plan.name === 'Starter');
                    if (starterPlan) {
                      handleCheckout(starterPlan);
                    }
