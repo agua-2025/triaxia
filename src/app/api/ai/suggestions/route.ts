@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateProjectSuggestions } from '@/lib/openai'
+import { generateProjectSuggestions } from '@/lib/huggingface'
 import { getCurrentTenant } from '@/lib/prisma'
 import { createServerClient } from '@supabase/ssr'
 

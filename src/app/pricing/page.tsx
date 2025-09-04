@@ -12,17 +12,17 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, Zap, Building2, Crown } from 'lucide-react';
-import { STRIPE_PLANS, formatPrice, StripePlan } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanKey } from '@/lib/stripe';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-const planIcons: Record<StripePlan, any> = {
+const planIcons: Record<PlanKey, any> = {
   starter: Zap,
   professional: Building2,
   enterprise: Crown,
 };
 
-const planColors: Record<StripePlan, string> = {
+const planColors: Record<PlanKey, string> = {
   starter: 'bg-gradient-to-r from-cyan-500 to-blue-500',
   professional: 'bg-gradient-to-r from-blue-500 to-purple-500',
   enterprise: 'bg-gradient-to-r from-purple-500 to-pink-500',
@@ -44,7 +44,7 @@ function isValidEmail(email: string) {
 }
 
 export default function PricingPage() {
-  const [loading, setLoading] = useState<StripePlan | null>(null);
+  const [loading, setLoading] = useState<PlanKey | null>(null);
   const [userEmail, setUserEmail] = useState('');
   const [tenantInput, setTenantInput] = useState('');
   const searchParams = useSearchParams();
@@ -52,7 +52,7 @@ export default function PricingPage() {
 
   const tenantSlug = useMemo(() => normalizeSlug(tenantInput), [tenantInput]);
 
-  async function handleCheckout(plan: StripePlan) {
+  async function handleCheckout(plan: PlanKey) {
     if (!isValidEmail(userEmail)) {
       alert('Informe um e-mail válido.');
       return;
@@ -193,8 +193,8 @@ export default function PricingPage() {
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {Object.entries(STRIPE_PLANS).map(([planKey, plan]) => {
-            const key = planKey as StripePlan;
+          {Object.entries(PLANS).map(([planKey, plan]) => {
+            const key = planKey as PlanKey;
             const Icon = planIcons[key];
             const isPopular = key === 'professional';
 
