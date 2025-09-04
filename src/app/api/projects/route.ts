@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getProjectsByTenant, createProjectForTenant } from '@/lib/prisma'
-import { getCurrentTenant } from '@/middleware'
+import { getCurrentTenant } from '@/lib/prisma'
 import { createServerClient } from '@supabase/ssr'
 
 // Use Node.js runtime for Prisma compatibility
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const projects = await getProjectsByTenant(tenant.tenantId)
+    const projects = await getProjectsByTenant(tenant)
     return NextResponse.json({ projects })
   } catch (error) {
     console.error('Error fetching projects:', error)
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const project = await createProjectForTenant(tenant.tenantId, {
+    const project = await createProjectForTenant(tenant, {
       name,
       description,
       userId: user.id

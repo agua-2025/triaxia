@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUsersByTenant, createUserForTenant } from '@/lib/prisma'
-import { getCurrentTenant } from '@/middleware'
+import { getCurrentTenant } from '@/lib/prisma'
 
 // Use Node.js runtime for Prisma compatibility
 export const runtime = 'nodejs'
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const users = await getUsersByTenant(tenant.tenantId)
+    const users = await getUsersByTenant(tenant)
     return NextResponse.json({ users })
   } catch (error) {
     console.error('Error fetching users:', error)
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = await createUserForTenant(tenant.tenantId, {
+    const user = await createUserForTenant(tenant, {
       email,
       name,
       role,

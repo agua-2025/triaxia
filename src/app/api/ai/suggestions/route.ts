@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateProjectSuggestions } from '@/lib/openai'
-import { getCurrentTenant } from '@/middleware'
+import { getCurrentTenant } from '@/lib/prisma'
 import { createServerClient } from '@supabase/ssr'
 
 export const runtime = 'nodejs'

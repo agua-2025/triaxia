@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { headers } from 'next/headers'
+import { stripe, STRIPE_PLANS, StripePlan } from '@/lib/stripe'
 
 export const runtime = 'nodejs'
 
