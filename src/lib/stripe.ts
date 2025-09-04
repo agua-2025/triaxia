@@ -14,7 +14,7 @@ if (!isServer && !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
 // Instância do Stripe no server com apiVersion fixa (estabilidade)
 export const stripe = isServer
   ? new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2025-08-27',
+      apiVersion: '2025-08-27.basil',
     })
   : null;
 
