@@ -18,7 +18,9 @@ export default function TestAIPage() {
       const result = await generateSuggestions(projectName)
       setSuggestions(result)
     } catch (err) {
-      console.error('Error:', err)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error:', err)
+      }
     }
   }
 
