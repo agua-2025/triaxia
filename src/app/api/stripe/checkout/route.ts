@@ -1,9 +1,10 @@
 // src/app/api/stripe/checkout/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { stripe, STRIPE_PLANS, StripePlan } from '@/lib/stripe';
+import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
+import { createClient } from '@/lib/supabase/server'
+import { headers } from 'next/headers'
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,10 +30,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const selectedPlan = STRIPE_PLANS[plan as StripePlan];
-    const origin = process.env.APP_URL ?? new URL(request.url).origin;
-
-    console.log('Dados recebidos:', { plan, tenantSlug, userEmail, origin });
+    const selectedPlan = STRIPE_PLANS[plan as StripePlan]
+    const headersList = await headers()
+    const origin = process.env.APP_URL ?? new URL(request.url).origin
+    
+    console.log('Dados recebidos:', { plan, tenantSlug, userEmail, origin })
 
     // Buscar ou criar cliente por e-mail
     const { data: found } = await stripe.customers.list({
@@ -83,7 +85,12 @@ export async function POST(request: NextRequest) {
     console.log('Criando sessão de checkout...');
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
-      line_items: [{ price: price.id, quantity: 1 }],
+      line_items: [
+        {
+          price: price.id,
+          quantity: 1,
+        },
+      ],
       mode: 'subscription',
       success_url: `${origin}/onboarding?session_id={CHECKOUT_SESSION_ID}&tenant=${tenantSlug}`,
       cancel_url: `${origin}/pricing?canceled=true`,
