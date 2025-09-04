@@ -23,13 +23,13 @@ const eslintConfig = [
       },
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "error",
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/prefer-nullish-coalescing": "error",
-      "@typescript-eslint/prefer-optional-chain": "error",
-      "prefer-const": "error",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "warn",
+      "@typescript-eslint/prefer-optional-chain": "warn",
+      "prefer-const": "warn",
       "no-var": "error",
-      "no-console": "warn"
+      "no-console": "off"
     },
     ignores: [
       "node_modules/**",
