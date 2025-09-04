@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const { tenantSlug, plan, userEmail } = session.metadata || {}
+  const { tenantSlug, plan, userEmail } = session.metadata ?? {}
   
   if (!tenantSlug || !plan || !userEmail) {
     console.error('Metadados obrigatórios não encontrados na sessão')
@@ -160,7 +160,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  const { tenantSlug } = subscription.metadata || {}
+  const { tenantSlug } = subscription.metadata ?? {}
   
   if (!tenantSlug) return
 
@@ -180,7 +180,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  const { tenantSlug } = subscription.metadata || {}
+  const { tenantSlug } = subscription.metadata ?? {}
   
   if (!tenantSlug) return
 
@@ -220,7 +220,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  const { tenantSlug } = subscription.metadata || {}
+  const { tenantSlug } = subscription.metadata ?? {}
   
   if (!tenantSlug) return
 
@@ -251,7 +251,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   }
   
   const subscription = await stripe.subscriptions.retrieve(subscriptionId as string)
-  const { tenantSlug } = subscription.metadata || {}
+  const { tenantSlug } = subscription.metadata ?? {}
   
   if (!tenantSlug) return
 
@@ -282,7 +282,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   }
   
   const subscription = await stripe.subscriptions.retrieve(subscriptionId as string)
-  const { tenantSlug } = subscription.metadata || {}
+  const { tenantSlug } = subscription.metadata ?? {}
   
   if (!tenantSlug) return
 

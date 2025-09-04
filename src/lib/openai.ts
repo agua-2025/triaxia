@@ -10,7 +10,7 @@ export const openai = new OpenAI({
 
 // Default configuration
 export const AI_CONFIG = {
-  model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
   temperature: 0.7,
   max_tokens: 1000,
 } as const
@@ -23,13 +23,13 @@ export async function generateText(prompt: string, options?: {
 }) {
   try {
     const response = await openai.chat.completions.create({
-      model: options?.model || AI_CONFIG.model,
+      model: options?.model ?? AI_CONFIG.model,
       messages: [{ role: 'user', content: prompt }],
-      temperature: options?.temperature || AI_CONFIG.temperature,
-      max_tokens: options?.max_tokens || AI_CONFIG.max_tokens,
+      temperature: options?.temperature ?? AI_CONFIG.temperature,
+      max_tokens: options?.max_tokens ?? AI_CONFIG.max_tokens,
     })
 
-    return response.choices[0]?.message?.content || ''
+    return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('OpenAI API Error:', error)
     throw new Error('Failed to generate AI response')

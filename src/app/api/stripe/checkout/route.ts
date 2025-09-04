@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     const selectedPlan = STRIPE_PLANS[plan as StripePlan]
     const headersList = await headers()
-    const origin = headersList.get('origin') || headersList.get('host') || process.env.APP_URL || 'http://localhost:3000'
+    const origin = headersList.get('origin') ?? headersList.get('host') ?? process.env.APP_URL ?? 'http://localhost:3000'
     
     console.log('Dados recebidos:', { plan, tenantSlug, userEmail, origin })
 

@@ -59,9 +59,7 @@ export async function middleware(request: NextRequest) {
   )
 
   // Get user session
-  const {
-    data: { user: _user },
-  } = await supabase.auth.getUser()
+  await supabase.auth.getUser()
 
   // Get tenant info
   const tenant = await getCurrentTenant(request)
