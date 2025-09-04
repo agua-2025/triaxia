@@ -1,18 +1,13 @@
-import OpenAI from 'openai'
-
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('OPENAI_API_KEY is required')
+if (!process.env.HUGGINGFACE_API_KEY) {
+  throw new Error('HUGGINGFACE_API_KEY is required')
 }
-
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 // Default configuration
 export const AI_CONFIG = {
-  model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+  model: process.env.HUGGINGFACE_MODEL ?? 'microsoft/DialoGPT-medium',
   temperature: 0.7,
   max_tokens: 1000,
+  apiUrl: 'https://api-inference.huggingface.co/models/',
 } as const
 
 // AI Helper functions
@@ -22,18 +17,33 @@ export async function generateText(prompt: string, options?: {
   model?: string
 }) {
   try {
-    const response = await openai.chat.completions.create({
-      model: options?.model ?? AI_CONFIG.model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: options?.temperature ?? AI_CONFIG.temperature,
-      max_tokens: options?.max_tokens ?? AI_CONFIG.max_tokens,
+    const model = options?.model ?? AI_CONFIG.model
+    const response = await fetch(`${AI_CONFIG.apiUrl}${model}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          temperature: options?.temperature ?? AI_CONFIG.temperature,
+          max_new_tokens: options?.max_tokens ?? AI_CONFIG.max_tokens,
+          return_full_text: false,
+        },
+      }),
     })
 
-    return response.choices[0]?.message?.content ?? ''
+    if (!response.ok) {
+      throw new Error(`Hugging Face API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data[0]?.generated_text ?? data.generated_text ?? ''
   } catch (error) {
     // Log error in development only
     if (process.env.NODE_ENV === 'development') {
-      console.error('OpenAI API Error:', error)
+      console.error('Hugging Face API Error:', error)
     }
     throw new Error('Failed to generate AI response')
   }

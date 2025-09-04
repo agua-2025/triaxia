@@ -31,46 +31,57 @@ export const getStripe = () => {
 export const STRIPE_PLANS = {
   starter: {
     name: 'Starter',
-    description: 'Ideal para pequenas equipes',
+    description: 'Pequenas equipes',
     price: 29900, // R$ 299.00 em centavos
     currency: 'brl',
     interval: 'month' as const,
+    jobLimit: 10,
     features: [
-      'Até 100 vagas ativas',
-      'IA para matching básico',
-      'Relatórios básicos',
+      'Até 10 vagas abertas simultâneas',
+      'Todos os recursos inclusos',
+      'IA para análise de candidatos',
+      'Relatórios e analytics',
       'Suporte por email',
-      'Integrações básicas'
+      'Integrações completas',
+      'Teste gratuito de 14 dias'
     ]
   },
   professional: {
     name: 'Professional',
-    description: 'Para equipes em crescimento',
+    description: 'Médias empresas',
     price: 49900, // R$ 499.00 em centavos
     currency: 'brl',
     interval: 'month' as const,
+    jobLimit: 50,
     features: [
-      'Vagas ilimitadas',
-      'IA avançada para matching',
-      'Analytics completo',
+      'Até 50 vagas abertas simultâneas',
+      'Todos os recursos inclusos',
+      'IA para análise de candidatos',
+      'Relatórios e analytics',
       'Suporte prioritário',
-      'Todas as integrações',
-      'Automação de workflows'
+      'Integrações completas',
+      'Automação de workflows',
+      'Teste gratuito de 14 dias'
     ]
   },
   enterprise: {
     name: 'Enterprise',
-    description: 'Para grandes organizações',
+    description: 'Grandes organizações',
     price: 127500, // R$ 1275.00 em centavos
     currency: 'brl',
     interval: 'month' as const,
+    jobLimit: 200,
     features: [
-      'Tudo do Professional',
-      'Implementação dedicada',
-      'Suporte 24/7',
+      'Até 200 vagas abertas simultâneas',
+      'Todos os recursos inclusos',
+      'IA para análise de candidatos',
+      'Relatórios e analytics avançados',
+      'Suporte 24/7 dedicado',
+      'Integrações completas',
+      'Automação avançada',
       'API personalizada',
-      'Treinamento da equipe',
-      'SLA garantido'
+      'Implementação dedicada',
+      'Teste gratuito de 14 dias'
     ]
   }
 } as const
