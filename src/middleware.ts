@@ -1,13 +1,12 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { cookies } from 'next/headers'
 
 // Configure Edge Runtime - Disabled for Stripe compatibility
 // export const runtime = 'experimental-edge'
 
 export async function getCurrentTenant(request: NextRequest) {
   // Extract tenant from subdomain or path
-  const host = request.headers.get('host') || ''
+  const host = request.headers.get('host') ?? ''
   const url = new URL(request.url)
   
   // Check for subdomain (tenant.domain.com)
@@ -37,7 +36,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  let supabaseResponse = NextResponse.next({
+  const supabaseResponse = NextResponse.next({
     request,
   })
 
@@ -61,7 +60,7 @@ export async function middleware(request: NextRequest) {
 
   // Get user session
   const {
-    data: { user },
+    data: { user: _user },
   } = await supabase.auth.getUser()
 
   // Get tenant info

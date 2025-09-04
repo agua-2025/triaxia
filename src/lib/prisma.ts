@@ -32,7 +32,7 @@ export async function createUserForTenant(tenantId: string, data: {
     data: {
       ...data,
       tenantId,
-      role: data.role || 'USER'
+      role: data.role ?? 'USER'
     }
   })
 }

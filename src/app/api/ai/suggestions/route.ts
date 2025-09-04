@@ -53,7 +53,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ suggestions })
   } catch (error) {
-    console.error('AI Suggestions Error:', error)
+    // Log error in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error('AI Suggestions Error:', error)
+    }
     return NextResponse.json(
       { error: 'Failed to generate suggestions' },
       { status: 500 }
