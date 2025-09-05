@@ -126,3 +126,12 @@ enum JobStatus {
   PAUSED
   CLOSED
 }
+
+// Webhook event tracking for idempotency
+model WebhookEvent {
+  id        String   @id // Stripe event ID
+  type      String   // Event type (e.g., checkout.session.completed)
+  createdAt DateTime @default(now())
+  
+  @@map("webhook_events")
+}
