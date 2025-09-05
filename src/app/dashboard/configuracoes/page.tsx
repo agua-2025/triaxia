@@ -107,7 +107,8 @@ export default function ConfiguracoesPage() {
       }, 3000)
     } catch (error) {
       console.error('❌ Erro ao salvar:', error)
-      alert(`Erro ao salvar configurações: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+      alert(`Erro ao salvar configurações: ${errorMessage}`)
     } finally {
       setSaving(false)
       console.log('🏁 Processo de salvamento finalizado')

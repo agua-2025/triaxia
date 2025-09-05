@@ -79,8 +79,12 @@ export async function middleware(request: NextRequest) {
   await supabase.auth.getUser();
 
   // Preferência: subdomínio de triaxia.com.br; fallback: path /t/{slug}
-  const tenant =
-    tenantFromSubdomain ?? extractTenantFromPath(pathname) ?? null;
+  let tenant = tenantFromSubdomain ?? extractTenantFromPath(pathname) ?? null;
+
+  // Para desenvolvimento: se acessando dashboard ou API via localhost sem tenant, usar 'genial' como padrão
+  if (!tenant && (pathname.startsWith('/dashboard') || pathname.startsWith('/api/tenant/settings')) && host.includes('localhost')) {
+    tenant = { tenantId: 'genial', tenantSlug: 'genial' };
+  }
 
   if (tenant) {
     supabaseResponse.headers.set('x-tenant-id', tenant.tenantId);

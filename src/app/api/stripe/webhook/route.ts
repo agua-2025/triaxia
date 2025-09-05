@@ -36,7 +36,19 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('Webhook signature verification failed:', (err as any)?.message);
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    
+    // Em desenvolvimento, permitir eventos de teste sem verificação de assinatura
+    if (process.env.NODE_ENV === 'development' && signature.includes('test_signature')) {
+      console.log('🔧 Modo desenvolvimento: processando evento de teste sem verificação de assinatura');
+      try {
+        event = JSON.parse(body);
+      } catch (parseErr) {
+        console.error('Erro ao fazer parse do evento de teste:', parseErr);
+        return NextResponse.json({ error: 'Invalid test event format' }, { status: 400 });
+      }
+    } else {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    }
   }
 
   try {
