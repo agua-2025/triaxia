@@ -213,17 +213,19 @@ export default function SuccessPage() {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link href="/onboarding" className="flex-1">
+                <Link href="/dashboard/configuracoes" className="flex-1">
                   <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-lg">
-                    <Rocket className="w-5 h-5 mr-2" />
-                    Começar Onboarding
+                    <Settings className="w-5 h-5 mr-2" />
+                    Configurar Empresa
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
-                <Button variant="outline" className="flex-1 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-lg">
-                  <Settings className="w-5 h-5 mr-2" />
-                  Ver Documentação
-                </Button>
+                <Link href="/dashboard" className="flex-1">
+                  <Button variant="outline" className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-lg">
+                    <Rocket className="w-5 h-5 mr-2" />
+                    Ir para Dashboard
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

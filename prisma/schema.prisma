@@ -52,6 +52,7 @@ model Tenant {
   // Relations
   users     User[]
   projects  Project[]
+  jobs      Job[]
   
   @@map("tenants")
 }
@@ -69,6 +70,7 @@ model User {
   // Relations
   tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   projects Project[]
+  jobs     Job[]
   
   @@map("users")
 }
@@ -77,6 +79,30 @@ model Project {
   id          String   @id @default(cuid())
   name        String
   description String?
+  tenantId    String
+  userId      String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("projects")
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  department  String?
+  location    String?
+  type        String?  // CLT, PJ, Estágio, etc.
+  salary      String?
+  requirements Json @default("[]")
+  benefits     Json @default("[]")
+  status      JobStatus @default(ACTIVE)
   tenantId    String
   userId      String
   
@@ -87,10 +113,16 @@ model Project {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  @@map("projects")
+  @@map("jobs")
 }
 
 enum UserRole {
   ADMIN
   USER
+}
+
+enum JobStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
 }

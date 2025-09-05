@@ -41,6 +41,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const host = request.headers.get('host') ?? '';
+  const pathname = request.nextUrl.pathname;
+
+  // Verifica se é um subdomínio de tenant
+  const tenantFromSubdomain = extractTenantFromSubdomain(host);
+  
+  // Se é um subdomínio de tenant e está acessando a raiz, redireciona para a página do tenant
+  if (tenantFromSubdomain && pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${tenantFromSubdomain.tenantSlug}`;
+    return NextResponse.rewrite(url);
+  }
+
   const supabaseResponse = NextResponse.next({ request });
 
   // Supabase SSR (cookies)
@@ -65,12 +78,9 @@ export async function middleware(request: NextRequest) {
   // Opcional: aquece a sessão (resultado não é usado aqui)
   await supabase.auth.getUser();
 
-  const host = request.headers.get('host') ?? '';
-  const pathname = request.nextUrl.pathname;
-
   // Preferência: subdomínio de triaxia.com.br; fallback: path /t/{slug}
   const tenant =
-    extractTenantFromSubdomain(host) ?? extractTenantFromPath(pathname) ?? null;
+    tenantFromSubdomain ?? extractTenantFromPath(pathname) ?? null;
 
   if (tenant) {
     supabaseResponse.headers.set('x-tenant-id', tenant.tenantId);

@@ -294,12 +294,20 @@ export default function OnboardingPage() {
                       Personalize sua empresa com logo, cores e informações específicas para criar uma experiência única.
                     </p>
                     <div className="bg-white/60 rounded-xl p-4 border border-blue-200/30">
-                      <div className="flex items-center mb-2">
-                        <Sparkles className="w-5 h-5 text-blue-600 mr-2" />
-                        <span className="text-sm font-medium text-blue-800">Disponível no Dashboard</span>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          <Sparkles className="w-5 h-5 text-blue-600 mr-2" />
+                          <span className="text-sm font-medium text-blue-800">Configure Agora</span>
+                        </div>
+                        <Link href="/dashboard/configuracoes">
+                          <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
+                            <Settings className="w-4 h-4 mr-1" />
+                            Configurar
+                          </Button>
+                        </Link>
                       </div>
                       <p className="text-sm text-blue-600">
-                        Acesse as configurações da empresa através do painel administrativo.
+                        Personalize logo, cores e informações da sua empresa.
                       </p>
                     </div>
                   </div>
