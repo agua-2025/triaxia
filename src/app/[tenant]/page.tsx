@@ -177,11 +177,8 @@ export default function TenantPublicPage() {
                 <Card 
                   key={job.id} 
                   className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                    selectedJob?.id === job.id ? 'ring-2' : ''
+                    selectedJob?.id === job.id ? 'ring-2 ring-blue-500' : ''
                   }`}
-                  style={{ 
-                    ringColor: selectedJob?.id === job.id ? company.primaryColor : 'transparent'
-                  }}
                   onClick={() => setSelectedJob(job)}
                 >
                   <CardHeader>
