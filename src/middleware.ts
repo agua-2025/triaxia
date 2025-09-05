@@ -81,8 +81,8 @@ export async function middleware(request: NextRequest) {
   // Preferência: subdomínio de triaxia.com.br; fallback: path /t/{slug}
   let tenant = tenantFromSubdomain ?? extractTenantFromPath(pathname) ?? null;
 
-  // Para desenvolvimento: se acessando dashboard ou API via localhost sem tenant, usar 'genial' como padrão
-  if (!tenant && (pathname.startsWith('/dashboard') || pathname.startsWith('/api/tenant/settings')) && host.includes('localhost')) {
+  // Para desenvolvimento e produção: se acessando dashboard ou API sem tenant, usar 'genial' como padrão
+  if (!tenant && (pathname.startsWith('/dashboard') || pathname.startsWith('/api/tenant/settings'))) {
     tenant = { tenantId: 'genial', tenantSlug: 'genial' };
   }
 
