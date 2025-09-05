@@ -86,7 +86,7 @@ Copie `.env.example` para `.env.local` e configure:
 
 ```bash
 # Database
-DATABASE_URL="postgresql://..."
+DATABASE_URL="postgresql://...."
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL="https://..."
