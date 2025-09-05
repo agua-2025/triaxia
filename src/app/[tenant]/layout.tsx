@@ -7,10 +7,11 @@ interface TenantLayoutProps {
 }
 
 export async function generateMetadata(
-  { params }: { params: { tenant: string } }
+  { params }: { params: Promise<{ tenant: string }> }
 ): Promise<Metadata> {
   // Em produção, você buscaria os dados da empresa do banco de dados
-  const companyName = params.tenant.charAt(0).toUpperCase() + params.tenant.slice(1)
+  const { tenant } = await params
+  const companyName = tenant.charAt(0).toUpperCase() + tenant.slice(1)
   
   return {
     title: `Carreiras - ${companyName}`,
