@@ -95,6 +95,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   console.log('Session customer:', session.customer);
   console.log('Session subscription:', session.subscription);
   console.log('Session mode:', session.mode);
+  console.log('Session full object:', JSON.stringify(session, null, 2));
   
   const { tenantSlug, plan, userEmail } = session.metadata ?? {};
   console.log('Extracted metadata:', { tenantSlug, plan, userEmail });
@@ -107,10 +108,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     });
     return;
   }
-  if (!session.customer || !session.subscription) {
-    console.error('Session sem customer/subscription:', {
+  // Para pagamentos únicos, subscription pode não existir
+  if (!session.customer) {
+    console.error('Session sem customer:', {
       customer: session.customer || 'MISSING',
-      subscription: session.subscription || 'MISSING'
+      subscription: session.subscription || 'MISSING (OK para pagamento único)'
     });
     return;
   }
@@ -119,6 +121,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     session.mode === 'subscription' && session.subscription
       ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
       : null;
+      
+  // Para pagamentos únicos, definir status como 'active' diretamente
+  const tenantStatus = session.mode === 'subscription' ? (trialEndsAt ? 'trial' : 'active') : 'active';
 
   console.log('Verificando se tenant já existe:', tenantSlug);
   const existing = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
@@ -143,9 +148,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           slug: tenantSlug,
           domain: `${tenantSlug}.triaxia.com`,
           plan,
-          status: trialEndsAt ? 'trial' : 'active',
+          status: tenantStatus,
           customerId: session.customer as string,
-          subscriptionId: session.subscription as string,
+          subscriptionId: session.subscription as string | null,
           trialEndsAt,
           settings: { onboardingCompleted: false, setupStep: 'company_info' } as any,
         },
@@ -179,9 +184,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
          where: { slug: tenantSlug },
          data: {
            plan,
-           status: trialEndsAt ? 'trial' : 'active',
+           status: tenantStatus,
            customerId: session.customer as string,
-           subscriptionId: session.subscription as string,
+           subscriptionId: session.subscription as string | null,
            trialEndsAt,
          },
        });

@@ -19,6 +19,9 @@ build/
 .env.vercel
 setup-vercel-env.ps1
 
+# Vercel
+.vercel
+
 # Database
 *.db
 *.sqlite

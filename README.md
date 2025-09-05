@@ -33,8 +33,71 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 🚀 Deploy Automático
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Este projeto está configurado com **deploy automático no Vercel** usando GitHub Actions.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Configuração Rápida
+
+```bash
+# Execute o script de configuração
+.\setup-vercel-auto-deploy.ps1
+```
+
+### Deploy Manual
+
+```bash
+# Deploy para produção
+vercel --prod
+
+# Deploy de preview
+vercel
+```
+
+📖 **Documentação completa**: [DEPLOY.md](./DEPLOY.md)
+
+## 🛠️ Tecnologias
+
+- **Framework**: Next.js 15 com App Router
+- **Database**: PostgreSQL com Prisma ORM
+- **Auth**: Supabase Authentication
+- **Payments**: Stripe
+- **AI**: HuggingFace Transformers
+- **Styling**: Tailwind CSS
+- **Deploy**: Vercel com GitHub Actions
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── app/                 # App Router (Next.js 13+)
+│   ├── [tenant]/       # Rotas multi-tenant
+│   ├── api/            # API Routes
+│   ├── dashboard/      # Dashboard da empresa
+│   └── candidatos/     # Portal do candidato
+├── components/         # Componentes reutilizáveis
+├── lib/               # Utilitários e configurações
+└── middleware.ts      # Middleware para multi-tenancy
+```
+
+## 🔧 Variáveis de Ambiente
+
+Copie `.env.example` para `.env.local` e configure:
+
+```bash
+# Database
+DATABASE_URL="postgresql://..."
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="https://..."
+NEXT_PUBLIC_SUPABASE_ANON_KEY="..."
+SUPABASE_SERVICE_ROLE_KEY="..."
+
+# Stripe
+STRIPE_SECRET_KEY="sk_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# HuggingFace
+HUGGINGFACE_API_KEY="hf_..."
+```

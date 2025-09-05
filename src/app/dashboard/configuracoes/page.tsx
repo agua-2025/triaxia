@@ -76,6 +76,8 @@ export default function ConfiguracoesPage() {
 
   const handleSave = async () => {
     setSaving(true)
+    console.log('🔄 Iniciando salvamento das configurações...', settings)
+    
     try {
       const response = await fetch('/api/tenant/settings', {
         method: 'PUT',
@@ -85,17 +87,30 @@ export default function ConfiguracoesPage() {
         body: JSON.stringify(settings)
       })
 
+      console.log('📡 Resposta da API:', response.status, response.statusText)
+
       if (!response.ok) {
-        throw new Error('Erro ao salvar configurações')
+        const errorData = await response.text()
+        console.error('❌ Erro na resposta:', errorData)
+        throw new Error(`Erro ao salvar configurações: ${response.status} ${response.statusText}`)
       }
 
+      const result = await response.json()
+      console.log('✅ Configurações salvas com sucesso:', result)
+
       setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      console.log('🎉 Estado "saved" definido como true - botão Continuar deve aparecer')
+      
+      setTimeout(() => {
+        setSaved(false)
+        console.log('⏰ Estado "saved" resetado para false após 3 segundos')
+      }, 3000)
     } catch (error) {
-      console.error('Erro ao salvar:', error)
-      // Aqui você pode adicionar um toast de erro
+      console.error('❌ Erro ao salvar:', error)
+      alert(`Erro ao salvar configurações: ${error.message}`)
     } finally {
       setSaving(false)
+      console.log('🏁 Processo de salvamento finalizado')
     }
   }
 
