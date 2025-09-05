@@ -67,6 +67,13 @@ export async function POST(request: NextRequest) {
       process.env.APP_URL ??
       hdr.get('origin') ??
       'http://localhost:3000';
+    
+    console.log('Origin resolution debug:', {
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'NOT SET',
+      APP_URL: process.env.APP_URL || 'NOT SET',
+      headerOrigin: hdr.get('origin') || 'NOT SET',
+      finalOrigin: origin
+    });
 
     // Busca ou cria o cliente por e-mail
     console.log('Searching for customer with email:', userEmail);
