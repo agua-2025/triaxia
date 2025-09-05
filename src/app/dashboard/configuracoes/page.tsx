@@ -39,7 +39,7 @@ interface CompanySettings {
 }
 
 export default function ConfiguracoesPage() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [settings, setSettings] = useState<CompanySettings>({
@@ -56,15 +56,44 @@ export default function ConfiguracoesPage() {
     accentColor: '#10B981'
   })
 
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const response = await fetch('/api/tenant/settings')
+        if (response.ok) {
+          const data = await response.json()
+          setSettings(data.settings)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar configurações:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSettings()
+  }, [])
+
   const handleSave = async () => {
     setSaving(true)
     try {
-      // Simular salvamento
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const response = await fetch('/api/tenant/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings)
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro ao salvar configurações')
+      }
+
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (error) {
       console.error('Erro ao salvar:', error)
+      // Aqui você pode adicionar um toast de erro
     } finally {
       setSaving(false)
     }
@@ -73,6 +102,17 @@ export default function ConfiguracoesPage() {
   const handleInputChange = (field: keyof CompanySettings, value: string) => {
     setSettings(prev => ({ ...prev, [field]: value }))
     setSaved(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Carregando configurações...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
