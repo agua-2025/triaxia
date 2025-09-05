@@ -2,8 +2,8 @@ import { ReactNode } from 'react'
 import { Metadata } from 'next'
 
 interface TenantLayoutProps {
-  children: ReactNode
-  params: { tenant: string }
+  children: React.ReactNode
+  params: Promise<{ tenant: string }>
 }
 
 export async function generateMetadata(
@@ -23,7 +23,8 @@ export async function generateMetadata(
   }
 }
 
-export default function TenantLayout({ children }: TenantLayoutProps) {
+export default async function TenantLayout({ children, params }: TenantLayoutProps) {
+  const { tenant } = await params
   return (
     <div className="min-h-screen bg-gray-50">
       {children}
