@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MapPin, Clock, DollarSign, Building2, Users, Calendar } from 'lucide-react'
+import { MapPin, DollarSign, Building2, Users, Calendar } from 'lucide-react'
 
 interface Job {
   id: string
@@ -133,7 +134,7 @@ export default function TenantPublicPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center space-x-6">
             {company.logo ? (
-              <img src={company.logo} alt={company.name} className="h-16 w-16 rounded-lg" />
+              <Image src={company.logo} alt={company.name} width={64} height={64} className="h-16 w-16 rounded-lg" />
             ) : (
               <div 
                 className="h-16 w-16 rounded-lg flex items-center justify-center text-white text-2xl font-bold"
