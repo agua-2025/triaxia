@@ -89,13 +89,29 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  console.log('=== WEBHOOK CHECKOUT COMPLETED DEBUG START ===');
+  console.log('Session ID:', session.id);
+  console.log('Session metadata:', session.metadata);
+  console.log('Session customer:', session.customer);
+  console.log('Session subscription:', session.subscription);
+  console.log('Session mode:', session.mode);
+  
   const { tenantSlug, plan, userEmail } = session.metadata ?? {};
+  console.log('Extracted metadata:', { tenantSlug, plan, userEmail });
+  
   if (!tenantSlug || !plan || !userEmail) {
-    console.error('Metadados obrigatórios ausentes em checkout.session.completed');
+    console.error('Metadados obrigatórios ausentes em checkout.session.completed:', {
+      tenantSlug: tenantSlug || 'MISSING',
+      plan: plan || 'MISSING',
+      userEmail: userEmail || 'MISSING'
+    });
     return;
   }
   if (!session.customer || !session.subscription) {
-    console.error('Session sem customer/subscription');
+    console.error('Session sem customer/subscription:', {
+      customer: session.customer || 'MISSING',
+      subscription: session.subscription || 'MISSING'
+    });
     return;
   }
 
@@ -104,36 +120,80 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
       : null;
 
+  console.log('Verificando se tenant já existe:', tenantSlug);
   const existing = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
+  console.log('Tenant existente encontrado:', existing ? 'SIM' : 'NÃO');
+  
   if (!existing) {
-    await prisma.tenant.create({
-      data: {
-        name: `Empresa ${tenantSlug}`,
-        slug: tenantSlug,
-        domain: `${tenantSlug}.triaxia.com`,
-        plan,
-        status: trialEndsAt ? 'trial' : 'active',
-        customerId: session.customer as string,
-        subscriptionId: session.subscription as string,
-        trialEndsAt,
-        settings: { onboardingCompleted: false, setupStep: 'company_info' } as any,
-      },
+    console.log('Criando novo tenant com dados:', {
+      name: `Empresa ${tenantSlug}`,
+      slug: tenantSlug,
+      domain: `${tenantSlug}.triaxia.com`,
+      plan,
+      status: trialEndsAt ? 'trial' : 'active',
+      customerId: session.customer as string,
+      subscriptionId: session.subscription as string,
+      trialEndsAt
     });
-    // console.log(`Tenant criado: ${tenantSlug}`);
-  } else {
-    await prisma.tenant.update({
-      where: { slug: tenantSlug },
-      data: {
-        plan,
-        status: trialEndsAt ? 'trial' : 'active',
-        customerId: session.customer as string,
-        subscriptionId: session.subscription as string,
-        trialEndsAt,
-      },
+    
+    try {
+      const newTenant = await prisma.tenant.create({
+        data: {
+          name: `Empresa ${tenantSlug}`,
+          slug: tenantSlug,
+          domain: `${tenantSlug}.triaxia.com`,
+          plan,
+          status: trialEndsAt ? 'trial' : 'active',
+          customerId: session.customer as string,
+          subscriptionId: session.subscription as string,
+          trialEndsAt,
+          settings: { onboardingCompleted: false, setupStep: 'company_info' } as any,
+        },
     });
-    // console.log(`Tenant atualizado: ${tenantSlug}`);
-  }
-}
+       console.log('✅ Tenant criado com sucesso:', newTenant.id, newTenant.slug);
+       
+       // Criar usuário administrador
+       console.log('Criando usuário administrador para:', userEmail);
+       try {
+         const adminUser = await prisma.user.create({
+           data: {
+             email: userEmail,
+             name: userEmail.split('@')[0],
+             role: 'ADMIN',
+             tenantId: newTenant.id,
+           },
+         });
+         console.log('✅ Usuário administrador criado:', adminUser.id, adminUser.email);
+       } catch (userError) {
+         console.error('❌ Erro ao criar usuário administrador:', userError);
+       }
+       
+     } catch (tenantError) {
+       console.error('❌ Erro ao criar tenant:', tenantError);
+       throw tenantError;
+     }
+   } else {
+     console.log('Atualizando tenant existente:', tenantSlug);
+     try {
+       const updatedTenant = await prisma.tenant.update({
+         where: { slug: tenantSlug },
+         data: {
+           plan,
+           status: trialEndsAt ? 'trial' : 'active',
+           customerId: session.customer as string,
+           subscriptionId: session.subscription as string,
+           trialEndsAt,
+         },
+       });
+       console.log('✅ Tenant atualizado com sucesso:', updatedTenant.id, updatedTenant.slug);
+     } catch (updateError) {
+       console.error('❌ Erro ao atualizar tenant:', updateError);
+       throw updateError;
+     }
+   }
+   
+   console.log('=== WEBHOOK CHECKOUT COMPLETED DEBUG END ===');
+ }
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   const { tenantSlug } = subscription.metadata ?? {};
