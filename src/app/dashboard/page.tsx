@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { AuthGuard } from '@/components/auth/AuthGuard'
 import { 
   Users, 
   FileText, 
@@ -22,7 +23,8 @@ import {
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AuthGuard>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -309,7 +311,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   )
 }
 

@@ -5,15 +5,16 @@ require('dotenv').config({ path: '.env.local' });
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 async function resendStripeEvent() {
-  console.log('🔄 Reenviando evento do Stripe...');
+  console.log('🔄 Reenviando evento do Stripe para o tenant "Trae"...');
   
   try {
-    // ID do evento que queremos reenviar
-    const eventId = 'evt_1S3pnJ1VWrgEVy2mXERV4lZn';
+    // ID do evento mais recente do tenant "Trae"
+    const eventId = 'evt_1S4tfH1VWrgEVy2mogYBb4yI';
     
     // Busca o evento
     const event = await stripe.events.retrieve(eventId);
     console.log('📋 Evento encontrado:', event.type);
+    console.log('📋 Data do evento:', new Date(event.created * 1000).toLocaleString('pt-BR'));
     console.log('📋 Dados do evento:', JSON.stringify(event.data.object.metadata, null, 2));
     
     // Lista os endpoints de webhook
@@ -31,29 +32,32 @@ async function resendStripeEvent() {
     if (correctEndpoint) {
       console.log('\n✅ Endpoint encontrado:', correctEndpoint.url);
       
-      // Simula o reenvio criando um novo evento de teste
-      console.log('\n🧪 Criando evento de teste para simular o reenvio...');
+      // Simula o processamento do webhook localmente
+      console.log('\n🧪 Simulando processamento do webhook localmente...');
       
-      // Como não podemos reenviar eventos reais, vamos criar um evento de teste
-      // que simule o checkout.session.completed
-      const testEvent = {
-        type: 'checkout.session.completed',
-        data: event.data
-      };
+      const session = event.data.object;
+      const metadata = session.metadata;
       
-      console.log('\n📝 Evento simulado criado com sucesso!');
-      console.log('💡 Para reenviar o evento real, acesse o Stripe Dashboard:');
+      console.log('\n📝 Dados que seriam processados pelo webhook:');
+      console.log(`   - Tenant Slug: ${metadata.tenantSlug}`);
+      console.log(`   - User Email: ${metadata.userEmail}`);
+      console.log(`   - Plan: ${metadata.plan}`);
+      console.log(`   - Session ID: ${session.id}`);
+      console.log(`   - Customer Email: ${session.customer_details?.email}`);
+      
+      console.log('\n💡 Para reenviar o evento real via Stripe Dashboard:');
       console.log(`   https://dashboard.stripe.com/test/events/${eventId}`);
       console.log('   E clique em "Resend webhook"');
+      
+      console.log('\n🔧 Ou você pode processar manualmente executando o webhook localmente.');
       
     } else {
       console.log('\n❌ Nenhum endpoint de webhook encontrado para este projeto');
     }
     
   } catch (error) {
-    console.error('❌ Erro ao reenviar evento:', error.message);
+    console.error('❌ Erro ao buscar evento:', error.message);
   }
 }
 
-// Executa o script
 resendStripeEvent();

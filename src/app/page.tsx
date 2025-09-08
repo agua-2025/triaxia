@@ -1154,7 +1154,7 @@ export default function Home() {
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">
                     <span className="text-white text-xs">✓</span>
                   </div>
-                  Até 100 vagas ativas
+                  Até 10 vagas ativas
                 </li>
                 <li className="flex items-center text-gray-300">
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">
@@ -1214,7 +1214,7 @@ export default function Home() {
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">
                     <span className="text-white text-xs">✓</span>
                   </div>
-                  Vagas ilimitadas
+                  Até 50 vagas ativas
                 </li>
                 <li className="flex items-center text-gray-300">
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">
@@ -1261,9 +1261,8 @@ export default function Home() {
                 </h3>
                 <p className="text-gray-400 mb-6">Para grandes organizações</p>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-white">
-                    Personalizado
-                  </span>
+                  <span className="text-4xl font-bold text-white">R$ 1.275</span>
+                  <span className="text-gray-400">/mês</span>
                 </div>
                 <p className="text-sm text-gray-500">usuários ilimitados</p>
               </div>
@@ -1273,7 +1272,7 @@ export default function Home() {
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">
                     <span className="text-white text-xs">✓</span>
                   </div>
-                  Tudo do Professional
+                  Vagas ilimitadas
                 </li>
                 <li className="flex items-center text-gray-300">
                   <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mr-3">

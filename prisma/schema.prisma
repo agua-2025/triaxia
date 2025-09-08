@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,64 +9,68 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Multi-tenant models
-model Tenant {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  domain    String?  @unique
-  
-  // Branding & Customization
-  logo      String?  // URL to logo image
-  favicon   String?  // URL to favicon
-  primaryColor   String @default("#3B82F6") // Primary brand color
-  secondaryColor String @default("#1E40AF") // Secondary brand color
-  accentColor    String @default("#10B981") // Accent color
-  
-  // Company Information
-  description String?
-  website     String?
-  email       String?
-  phone       String?
-  address     String?
-  
-  // Subscription & Billing
-  plan           String @default("starter") // starter, professional, enterprise
-  status         String @default("trial")   // trial, active, suspended, cancelled
-  trialEndsAt    DateTime?
-  subscriptionId String?  // Stripe subscription ID
-  customerId     String?  // Stripe customer ID
-  
-  // Configuration
-  settings Json @default("{}") // JSON for flexible settings
-  
-  // Metadata
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+/**
+ * ===========================
+ *           MODELS
+ * ===========================
+ */
 
-  // Relations
-  users     User[]
-  projects  Project[]
-  jobs      Job[]
-  
+model Tenant {
+  id             String    @id @default(cuid())
+  name           String
+  slug           String    @unique
+  domain         String?   @unique
+  logo           String?
+  favicon        String?
+  primaryColor   String    @default("#3B82F6")
+  secondaryColor String    @default("#1E40AF")
+  accentColor    String    @default("#10B981")
+  description    String?
+  website        String?
+  email          String?
+  phone          String?
+  address        String?
+  plan           String    @default("starter")
+  status         String    @default("trial")
+  trialEndsAt    DateTime?
+  subscriptionId String?
+  customerId     String?
+  settings       Json      @default("{}")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  jobs             Job[]
+  projects         Project[]
+  users            User[]
+  activationTokens ActivationToken[] // <-- lado oposto da relação
+
+  @@unique([customerId])
+  @@unique([subscriptionId])
+
+  @@index([slug])
+
   @@map("tenants")
 }
 
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  name     String?
-  tenantId String
-  role     UserRole @default(USER)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(cuid())
+  email     String
+  name      String?
+  tenantId  String
+  role      UserRole  @default(USER)
+  isActive  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  // Relations
-  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  projects Project[]
-  jobs     Job[]
-  
+  jobs      Job[]
+  projects  Project[]
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([email, tenantId], name: "email_tenantId")
+
+  @@index([tenantId])
+  @@index([email])
+
   @@map("users")
 }
 
@@ -81,42 +80,99 @@ model Project {
   description String?
   tenantId    String
   userId      String?
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // Relations
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+
   @@map("projects")
 }
 
 model Job {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  department  String?
-  location    String?
-  type        String?  // CLT, PJ, Estágio, etc.
-  salary      String?
-  requirements Json @default("[]")
-  benefits     Json @default("[]")
-  status      JobStatus @default(ACTIVE)
-  tenantId    String
-  userId      String
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String    @id @default(cuid())
+  title        String
+  description  String?
+  department   String?
+  location     String?
+  type         String?
+  salary       String?
+  requirements Json      @default("[]")
+  benefits     Json      @default("[]")
+  status       JobStatus @default(ACTIVE)
+  tenantId     String
+  userId       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  level        String?
 
-  // Relations
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+
   @@map("jobs")
 }
 
+model ActivationToken {
+  id            String   @id @default(cuid())
+  tokenHash     String   @unique
+  email         String
+  userId        String
+  tenantId      String
+  expiresAt     DateTime
+  isUsed        Boolean  @default(false)
+  usedAt        DateTime?
+  createdFromIp String?
+  usedFromIp    String?
+  createdAt     DateTime @default(now())
+
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([email, tenantId, isUsed])
+  @@index([expiresAt])
+
+  @@map("activation_tokens")
+}
+
+model WebhookEvent {
+  id        String   @id
+  type      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type])
+
+  @@map("webhook_events")
+}
+
+model SystemAdmin {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  role      String    @default("SUPER_ADMIN")
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  createdBy String?
+
+  @@index([isActive])
+
+  @@map("system_admins")
+}
+
+/**
+ * ===========================
+ *            ENUMS
+ * ===========================
+ */
 enum UserRole {
+  SUPER_ADMIN
   ADMIN
   USER
 }
@@ -125,13 +181,4 @@ enum JobStatus {
   ACTIVE
   PAUSED
   CLOSED
-}
-
-// Webhook event tracking for idempotency
-model WebhookEvent {
-  id        String   @id // Stripe event ID
-  type      String   // Event type (e.g., checkout.session.completed)
-  createdAt DateTime @default(now())
-  
-  @@map("webhook_events")
 }

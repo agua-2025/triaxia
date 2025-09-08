@@ -1,41 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateProjectSuggestions } from '@/lib/huggingface'
 import { getCurrentTenant } from '@/lib/prisma'
-import { createServerClient } from '@supabase/ssr'
+import { requireAuth } from '@/lib/auth/api-auth'
 
 export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify user authentication
+    const { user, error: authError } = await requireAuth(request)
+    
+    if (authError) {
+      return authError
+    }
+    
     const tenant = await getCurrentTenant(request)
     
     if (!tenant) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
-      )
-    }
-
-    // Verify user authentication
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll()
-          },
-          setAll() {},
-        },
-      }
-    )
-
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
       )
     }
 

@@ -1,14 +1,14 @@
-// src/app/api/stripe/webhook/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
-import Stripe from 'stripe';
-import { stripe } from '@/lib/stripe';
-import { PrismaClient } from '@prisma/client';
-
+// Webhook Stripe — cria/atualiza tenant e dispara e-mail de ativação
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Prisma singleton (evita abrir várias conexões em serverless)
+import { headers } from 'next/headers';
+import Stripe from 'stripe';
+import { PrismaClient } from '@prisma/client';
+import { sendActivationEmail } from '@/lib/email/activation-email';
+// Se já existe esse serviço no teu projeto, ok. Se não, crie-o conforme você já vinha usando:
+import { createActivationToken } from '@/lib/auth/activation-service';
+
 const prisma =
   (globalThis as any).prisma ??
   new PrismaClient({
@@ -16,219 +16,210 @@ const prisma =
   });
 if (process.env.NODE_ENV !== 'production') (globalThis as any).prisma = prisma;
 
-export async function POST(request: NextRequest) {
-  if (!stripe) {
-    return NextResponse.json({ error: 'Stripe não está configurado' }, { status: 500 });
-  }
-  if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: 'STRIPE_WEBHOOK_SECRET ausente' }, { status: 500 });
-  }
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-08-27.basil',
+});
 
-  // Corpo cru (obrigatório para verificar assinatura)
-  const body = await request.text();
-  const signature = (await headers()).get('stripe-signature');
-  if (!signature) {
-    return NextResponse.json({ error: 'Assinatura do webhook não encontrada' }, { status: 400 });
-  }
-
-  let event: Stripe.Event;
+export async function POST(req: Request) {
   try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    console.error('Webhook signature verification failed:', (err as any)?.message);
-    
-    // Em desenvolvimento, permitir eventos de teste sem verificação de assinatura
-    if (process.env.NODE_ENV === 'development' && signature.includes('test_signature')) {
-      console.log('🔧 Modo desenvolvimento: processando evento de teste sem verificação de assinatura');
-      try {
-        event = JSON.parse(body);
-      } catch (parseErr) {
-        console.error('Erro ao fazer parse do evento de teste:', parseErr);
-        return NextResponse.json({ error: 'Invalid test event format' }, { status: 400 });
-      }
+    const body = await req.text();
+    const h = await headers();
+    const sig = h.get('stripe-signature') ?? '';
+    const secret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!secret)
+      return new Response('Missing STRIPE_WEBHOOK_SECRET', { status: 500 });
+
+    // Em dev, se não veio assinatura (ex.: testes manuais), aceita JSON puro
+    let event: Stripe.Event;
+    if (process.env.NODE_ENV === 'development' && !sig) {
+      event = JSON.parse(body);
     } else {
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+      event = stripe.webhooks.constructEvent(body, sig, secret);
     }
-  }
 
-  try {
-    // Idempotência básica: não processe o mesmo evento duas vezes
-    const already = await prisma.webhookEvent.findUnique({ where: { id: event.id } }).catch(() => null);
-    if (!already) {
-      await prisma.webhookEvent.create({
-        data: { id: event.id, type: event.type }, // crie esse model simples: id (PK), type (string), createdAt
-      });
+    // Idempotência (não processa duas vezes)
+    const already = await prisma.webhookEvent.findUnique({
+      where: { id: event.id },
+    });
+    if (already) {
+      return Response.json(
+        { received: true, duplicate: true },
+        { status: 200 }
+      );
+    }
 
-      switch (event.type) {
-        case 'checkout.session.completed': {
-          await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
-          break;
-        }
-        case 'customer.subscription.created': {
-          await handleSubscriptionCreated(event.data.object as Stripe.Subscription);
-          break;
-        }
-        case 'customer.subscription.updated': {
-          await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
-          break;
-        }
-        case 'customer.subscription.deleted': {
-          await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
-          break;
-        }
-        case 'invoice.payment_succeeded': {
-          await handlePaymentSucceeded(event.data.object as Stripe.Invoice);
-          break;
-        }
-        case 'invoice.payment_failed': {
-          await handlePaymentFailed(event.data.object as Stripe.Invoice);
-          break;
-        }
-        default: {
-          // OK ignorar eventos não tratados
-          // console.log(`Evento ignorado: ${event.type}`);
-        }
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutCompleted(session);
+        break;
       }
+
+      case 'customer.subscription.created': {
+        const sub = event.data.object as Stripe.Subscription;
+        await handleSubscriptionCreated(sub);
+        break;
+      }
+
+      case 'customer.subscription.updated': {
+        const sub = event.data.object as Stripe.Subscription;
+        await handleSubscriptionUpdated(sub);
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as Stripe.Subscription;
+        await handleSubscriptionDeleted(sub);
+        break;
+      }
+
+      case 'invoice.payment_succeeded': {
+        const inv = event.data.object as Stripe.Invoice;
+        await handlePaymentSucceeded(inv);
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const inv = event.data.object as Stripe.Invoice;
+        await handlePaymentFailed(inv);
+        break;
+      }
+
+      default:
+        // ignore outros
+        break;
     }
-    // Sempre responda 200 rapidamente; não bloqueie o Stripe
-    return NextResponse.json({ received: true }, { status: 200 });
-  } catch (err) {
-    console.error('Erro ao processar webhook:', err);
-    // Mesmo em erro interno, devolva 200 para evitar reentregas infinitas se o erro for nosso.
-    // Se preferir reentrega, troque para 500.
-    return NextResponse.json({ received: true }, { status: 200 });
+
+    // Marca idempotência
+    await prisma.webhookEvent.create({
+      data: { id: event.id, type: event.type },
+    });
+
+    return Response.json({ received: true }, { status: 200 });
+  } catch (err: any) {
+    console.error('[WEBHOOK] Error:', err?.message || err);
+    return new Response(`Webhook Error: ${err?.message || 'unknown'}`, {
+      status: 400,
+    });
   }
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  console.log('=== WEBHOOK CHECKOUT COMPLETED DEBUG START ===');
-  console.log('Session ID:', session.id);
-  console.log('Session metadata:', session.metadata);
-  console.log('Session customer:', session.customer);
-  console.log('Session subscription:', session.subscription);
-  console.log('Session mode:', session.mode);
-  console.log('Session full object:', JSON.stringify(session, null, 2));
-  
-  const { tenantSlug, plan, userEmail } = session.metadata ?? {};
-  console.log('Extracted metadata:', { tenantSlug, plan, userEmail });
-  
-  if (!tenantSlug || !plan || !userEmail) {
-    console.error('Metadados obrigatórios ausentes em checkout.session.completed:', {
-      tenantSlug: tenantSlug || 'MISSING',
-      plan: plan || 'MISSING',
-      userEmail: userEmail || 'MISSING'
-    });
-    return;
-  }
-  // Para pagamentos únicos, subscription pode não existir
-  if (!session.customer) {
-    console.error('Session sem customer:', {
-      customer: session.customer || 'MISSING',
-      subscription: session.subscription || 'MISSING (OK para pagamento único)'
-    });
-    return;
-  }
+// ---------- helpers de negócio ----------
 
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  // Metadados enviados na criação da session pelo teu endpoint /api/stripe/checkout
+  const tenantSlug = session.metadata?.tenantSlug;
+  const plan = session.metadata?.plan || 'starter';
+
+  // Detecta e-mail de forma robusta
+  const email =
+    session.customer_details?.email ??
+    (typeof session.customer === 'string'
+      ? (async () => {
+          const customer = await stripe.customers.retrieve(session.customer as string);
+          return 'email' in customer ? customer.email : undefined;
+        })()
+      : undefined) ??
+    (session.metadata?.userEmail as string | undefined) ??
+    process.env.DEBUG_EMAIL_TO;
+
+  const resolvedEmail = await email;
+
+  if (!tenantSlug) throw new Error('Missing tenantSlug in metadata');
+  if (!resolvedEmail)
+    console.warn(
+      '[WEBHOOK] checkout.session.completed sem e-mail (usando fallback?)'
+    );
+
+  // status e trial (se quiser)
   const trialEndsAt =
     session.mode === 'subscription' && session.subscription
-      ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+      ? null /* ajuste se quiser trial server-side */
       : null;
-      
-  // Para pagamentos únicos, definir status como 'active' diretamente
-  const tenantStatus = session.mode === 'subscription' ? (trialEndsAt ? 'trial' : 'active') : 'active';
+  const tenantStatus: 'active' | 'trial' = trialEndsAt ? 'trial' : 'active';
 
-  console.log('Verificando se tenant já existe:', tenantSlug);
-  const existing = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
-  console.log('Tenant existente encontrado:', existing ? 'SIM' : 'NÃO');
-  
-  if (!existing) {
-    console.log('Criando novo tenant com dados:', {
-      name: `Empresa ${tenantSlug}`,
-      slug: tenantSlug,
-      domain: `${tenantSlug}.triaxia.com`,
-      plan,
-      status: trialEndsAt ? 'trial' : 'active',
-      customerId: session.customer as string,
-      subscriptionId: session.subscription as string,
-      trialEndsAt
-    });
-    
-    try {
-      const newTenant = await prisma.tenant.create({
+  const existing = await prisma.tenant.findUnique({
+    where: { slug: tenantSlug },
+  });
+  const tenant = existing
+    ? await prisma.tenant.update({
+        where: { slug: tenantSlug },
         data: {
-          name: `Empresa ${tenantSlug}`,
-          slug: tenantSlug,
-          domain: `${tenantSlug}.triaxia.com`,
           plan,
           status: tenantStatus,
-          customerId: session.customer as string,
-          subscriptionId: session.subscription as string | null,
+          customerId: String(session.customer),
+          subscriptionId: (session.subscription as string) || null,
           trialEndsAt,
-          settings: { onboardingCompleted: false, setupStep: 'company_info' } as any,
         },
+      })
+    : await prisma.tenant.create({
+        data: {
+          name: tenantSlug.charAt(0).toUpperCase() + tenantSlug.slice(1),
+          slug: tenantSlug,
+          domain: `${tenantSlug}.triaxia.com.br`,
+          plan,
+          status: tenantStatus,
+          customerId: String(session.customer),
+          subscriptionId: (session.subscription as string) || null,
+          trialEndsAt,
+          settings: {
+            onboardingCompleted: false,
+            setupStep: 'company_info',
+          } as any,
+        },
+      });
+
+  if (resolvedEmail) {
+    // Cria user "pendente" e manda ativação
+    const user = await prisma.user.upsert({
+      where: { email_tenantId: { email: resolvedEmail, tenantId: tenant.id } },
+      create: {
+        email: resolvedEmail,
+        name: resolvedEmail.split('@')[0],
+        role: 'ADMIN',
+        tenantId: tenant.id,
+        isActive: false,
+      },
+      update: {},
     });
-       console.log('✅ Tenant criado com sucesso:', newTenant.id, newTenant.slug);
-       
-       // Criar usuário administrador
-       console.log('Criando usuário administrador para:', userEmail);
-       try {
-         const adminUser = await prisma.user.create({
-           data: {
-             email: userEmail,
-             name: userEmail.split('@')[0],
-             role: 'ADMIN',
-             tenantId: newTenant.id,
-           },
-         });
-         console.log('✅ Usuário administrador criado:', adminUser.id, adminUser.email);
-       } catch (userError) {
-         console.error('❌ Erro ao criar usuário administrador:', userError);
-       }
-       
-     } catch (tenantError) {
-       console.error('❌ Erro ao criar tenant:', tenantError);
-       throw tenantError;
-     }
-   } else {
-     console.log('Atualizando tenant existente:', tenantSlug);
-     try {
-       const updatedTenant = await prisma.tenant.update({
-         where: { slug: tenantSlug },
-         data: {
-           plan,
-           status: tenantStatus,
-           customerId: session.customer as string,
-           subscriptionId: session.subscription as string | null,
-           trialEndsAt,
-         },
-       });
-       console.log('✅ Tenant atualizado com sucesso:', updatedTenant.id, updatedTenant.slug);
-     } catch (updateError) {
-       console.error('❌ Erro ao atualizar tenant:', updateError);
-       throw updateError;
-     }
-   }
-   
-   console.log('=== WEBHOOK CHECKOUT COMPLETED DEBUG END ===');
- }
+
+    const token = await createActivationToken({
+      email: resolvedEmail,
+      userId: user.id,
+      tenantId: tenant.id,
+      expiresInHours: 48,
+      createdFromIp: 'stripe-webhook',
+    });
+
+    if (token) {
+      await sendActivationEmail({
+        email: resolvedEmail,
+        name: user.name || resolvedEmail.split('@')[0],
+        tenantName: tenant.name,
+        tenantSlug: tenant.slug,
+        activationToken: token,
+        expiresInHours: 48,
+      });
+    } else {
+      console.error('[WEBHOOK] Failed to create activation token for', resolvedEmail);
+    }
+  }
+}
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  const { tenantSlug } = subscription.metadata ?? {};
+  const tenantSlug = subscription.metadata?.tenantSlug;
   if (!tenantSlug) return;
-
   await prisma.tenant.update({
     where: { slug: tenantSlug },
     data: {
       status: subscription.status === 'trialing' ? 'trial' : 'active',
       subscriptionId: subscription.id,
-      // Se você mapeia limite de vagas por priceId:
-      // vagasAbertasLimit: mapPriceToLimit(subscription.items.data[0].price.id),
     },
   });
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  const { tenantSlug } = subscription.metadata ?? {};
+  const tenantSlug = subscription.metadata?.tenantSlug;
   if (!tenantSlug) return;
 
   let status: 'active' | 'trial' | 'suspended' | 'cancelled';
@@ -254,17 +245,16 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     where: { slug: tenantSlug },
     data: {
       status,
-      trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-      // Ex.: atualizar limite ao trocar de plano:
-      // vagasAbertasLimit: mapPriceToLimit(subscription.items.data[0].price.id),
+      trialEndsAt: subscription.trial_end
+        ? new Date(subscription.trial_end * 1000)
+        : null,
     },
   });
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  const { tenantSlug } = subscription.metadata ?? {};
+  const tenantSlug = subscription.metadata?.tenantSlug;
   if (!tenantSlug) return;
-
   await prisma.tenant.update({
     where: { slug: tenantSlug },
     data: { status: 'cancelled' },
@@ -272,13 +262,11 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
-  const subscriptionId = (invoice as any).subscription as string | undefined;
-  if (!subscriptionId || !stripe) return;
-
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const { tenantSlug } = subscription.metadata ?? {};
+  const subId = (invoice as any).subscription as string | undefined;
+  if (!subId) return;
+  const sub = await stripe.subscriptions.retrieve(subId);
+  const tenantSlug = sub.metadata?.tenantSlug;
   if (!tenantSlug) return;
-
   await prisma.tenant.update({
     where: { slug: tenantSlug },
     data: { status: 'active' },
@@ -286,23 +274,13 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  const subscriptionId = (invoice as any).subscription as string | undefined;
-  if (!subscriptionId || !stripe) return;
-
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const { tenantSlug } = subscription.metadata ?? {};
+  const subId = (invoice as any).subscription as string | undefined;
+  if (!subId) return;
+  const sub = await stripe.subscriptions.retrieve(subId);
+  const tenantSlug = sub.metadata?.tenantSlug;
   if (!tenantSlug) return;
-
   await prisma.tenant.update({
     where: { slug: tenantSlug },
     data: { status: 'suspended' },
   });
 }
-
-// Exemplo (opcional) se quiser mapear limite de vagas por priceId
-// const PRICE_LIMITS: Record<string, number> = {
-//   [process.env.STRIPE_PRICE_STARTER!]: 10,
-//   [process.env.STRIPE_PRICE_PROF!]: 50,
-//   [process.env.STRIPE_PRICE_ENT!]: 200,
-// };
-// function mapPriceToLimit(priceId: string) { return PRICE_LIMITS[priceId] ?? 10; }

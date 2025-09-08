@@ -1,10 +1,13 @@
 import { HfInference } from '@huggingface/inference'
 
-if (!process.env.HUGGINGFACE_API_KEY) {
-  throw new Error('HUGGINGFACE_API_KEY is required')
+// Only require API key in runtime, not during build
+const apiKey = process.env.HUGGINGFACE_API_KEY
+
+if (!apiKey && process.env.NODE_ENV !== 'production') {
+  console.warn('HUGGINGFACE_API_KEY not found - AI features will be disabled')
 }
 
-export const hf = new HfInference(process.env.HUGGINGFACE_API_KEY)
+export const hf = apiKey ? new HfInference(apiKey) : null
 
 // Default configuration
 export const AI_CONFIG = {
@@ -20,6 +23,10 @@ export async function generateText(prompt: string, options?: {
   max_tokens?: number
   model?: string
 }) {
+  if (!hf) {
+    throw new Error('Hugging Face API not configured')
+  }
+  
   try {
     const response = await hf.textGeneration({
       model: options?.model ?? AI_CONFIG.model,

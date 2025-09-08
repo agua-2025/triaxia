@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUsersByTenant, createUserForTenant } from '@/lib/prisma'
 import { getCurrentTenant } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth/api-auth'
 
 // Use Node.js runtime for Prisma compatibility
 export const runtime = 'nodejs'
 
 export async function GET(request: NextRequest) {
   try {
+    // Verificar autenticação
+    const { user, error: authError } = await requireAuth(request)
+    
+    if (authError) {
+      return authError
+    }
+    
     const tenant = await getCurrentTenant(request)
     
     if (!tenant) {
@@ -29,6 +37,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar autenticação
+    const { user, error: authError } = await requireAuth(request)
+    
+    if (authError) {
+      return authError
+    }
+    
     const tenant = await getCurrentTenant(request)
     
     if (!tenant) {
@@ -48,7 +63,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = await createUserForTenant(tenant, {
+    const newUser = await createUserForTenant(tenant, {
       email,
       name,
       role,

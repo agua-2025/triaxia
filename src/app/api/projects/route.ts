@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getProjectsByTenant, createProjectForTenant } from '@/lib/prisma'
 import { getCurrentTenant } from '@/lib/prisma'
-import { createServerClient } from '@supabase/ssr'
+import { requireAuth } from '@/lib/auth/api-auth'
 
 // Use Node.js runtime for Prisma compatibility
 export const runtime = 'nodejs'
 
 export async function GET(request: NextRequest) {
   try {
+    // Verificar autenticação
+    const { user, error: authError } = await requireAuth(request)
+    
+    if (authError) {
+      return authError
+    }
+    
     const tenant = await getCurrentTenant(request)
     
     if (!tenant) {
@@ -30,37 +37,19 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar autenticação
+    const { user, error: authError } = await requireAuth(request)
+    
+    if (authError) {
+      return authError
+    }
+    
     const tenant = await getCurrentTenant(request)
     
     if (!tenant) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
-      )
-    }
-
-    // Get user from Supabase session
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll()
-          },
-          setAll() {
-            // No-op for API routes
-          },
-        },
-      }
-    )
-
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
       )
     }
 
@@ -77,7 +66,7 @@ export async function POST(request: NextRequest) {
     const project = await createProjectForTenant(tenant, {
       name,
       description,
-      userId: user.id
+      userId: user!.id
     })
 
     return NextResponse.json({ project }, { status: 201 })

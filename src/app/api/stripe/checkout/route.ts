@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
+import { requireAuth } from '@/lib/auth/api-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic'; // evita cache em serverless
@@ -21,7 +22,15 @@ type Body = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar autenticação
+    const { user, error: authError } = await requireAuth(request)
+    
+    if (authError) {
+      return authError
+    }
+    
     console.log('=== STRIPE CHECKOUT DEBUG START ===');
+    console.log('Usuário autenticado:', user!.email);
     console.log('Environment variables check:', {
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET',
       STRIPE_PRICE_STARTER: process.env.STRIPE_PRICE_STARTER || 'NOT SET',
@@ -108,7 +117,7 @@ export async function POST(request: NextRequest) {
         metadata: { tenantSlug, plan },
       },
       metadata: { tenantSlug, plan, userEmail },
-      success_url: `${origin}/onboarding?session_id={CHECKOUT_SESSION_ID}&tenant=${tenantSlug}`,
+      success_url: `${origin}/purchase-success?session_id={CHECKOUT_SESSION_ID}&tenant=${tenantSlug}&email=${encodeURIComponent(userEmail)}`,
       cancel_url: `${origin}/pricing?canceled=true`,
     });
     console.log('Session created successfully:', { id: session.id, url: session.url });

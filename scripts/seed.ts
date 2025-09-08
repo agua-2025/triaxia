@@ -25,7 +25,12 @@ async function main() {
 
   // Criar usuário admin
   const user = await prisma.user.upsert({
-    where: { email: 'admin@futura.com.br' },
+    where: {
+      email_tenantId: {
+        email: 'admin@futura.com.br',
+        tenantId: tenant.id
+      }
+    },
     update: {},
     create: {
       email: 'admin@futura.com.br',

@@ -75,15 +75,81 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Opcional: aquece a sessão (resultado não é usado aqui)
-  await supabase.auth.getUser();
-
   // Preferência: subdomínio de triaxia.com.br; fallback: path /t/{slug}
   let tenant = tenantFromSubdomain ?? extractTenantFromPath(pathname) ?? null;
 
   // Para desenvolvimento e produção: se acessando dashboard ou API sem tenant, usar 'genial' como padrão
   if (!tenant && (pathname.startsWith('/dashboard') || pathname.startsWith('/api/tenant/settings'))) {
     tenant = { tenantId: 'genial', tenantSlug: 'genial' };
+  }
+
+  // Define protected routes that require authentication
+  const protectedRoutes = [
+    '/dashboard',
+    '/system-admin',
+    '/onboarding'
+  ];
+  
+  // Define public routes that should bypass auth checks
+  const publicRoutes = [
+    '/activate',
+    '/login',
+    '/pricing',
+    '/purchase-success',
+    '/',
+    '/api/'
+  ];
+  
+  // Check if current path is public (should bypass auth)
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  
+  // Check if current path is protected
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname.startsWith(route) || 
+    (tenant && pathname.startsWith(`/${tenant.tenantSlug}/dashboard`)) ||
+    (tenant && pathname.startsWith(`/${tenant.tenantSlug}/onboarding`))
+  );
+  
+  // Skip auth check for API routes (they handle their own auth) and public routes
+  const isApiRoute = pathname.startsWith('/api/');
+  
+  if (isProtectedRoute && !isApiRoute && !isPublicRoute) {
+    // Check if user is authenticated and session is valid
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error || !session || !session.user) {
+      console.log('Usuário não autenticado ou sessão inválida, redirecionando para login');
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      if (tenant) {
+        loginUrl.searchParams.set('tenant', tenant.tenantSlug);
+      }
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    // Check if session is expired
+    if (session.expires_at && session.expires_at * 1000 < Date.now()) {
+      console.log('Sessão expirada, fazendo logout automático');
+      
+      // Clear auth cookies
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.delete('sb-access-token');
+      response.cookies.delete('sb-refresh-token');
+      
+      // Try to sign out from Supabase
+      try {
+        await supabase.auth.signOut();
+      } catch (signOutError) {
+        console.error('Erro ao fazer logout:', signOutError);
+      }
+      
+      return response;
+    }
+    
+    console.log('Usuário autenticado:', session.user.email);
+  } else {
+    // Opcional: aquece a sessão para rotas não protegidas
+    await supabase.auth.getUser();
   }
 
   if (tenant) {

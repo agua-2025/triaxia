@@ -41,17 +41,7 @@ export const PRICES = {
 export type PlanKey = keyof typeof PRICES;
 
 // Metadados de planos para UI (com preços em centavos)
-export const PLANS: Record<
-  PlanKey,
-  {
-    name: string;
-    description: string;
-    price: number;
-    currency: string;
-    interval: string;
-    features: string[];
-  }
-> = {
+export const PLANS = {
   starter: {
     name: 'Starter',
     description: 'Ideal para pequenas equipes',
@@ -59,13 +49,12 @@ export const PLANS: Record<
     currency: 'brl',
     interval: 'month',
     features: [
-      'Até 10 vagas abertas simultâneas',
-      'Todos os recursos inclusos',
-      'IA para análise de candidatos',
-      'Relatórios e analytics',
+      'Até 10 vagas ativas',
+      'IA para matching básico',
+      'Relatórios básicos',
       'Suporte por email',
-      'Integrações básicas',
-    ],
+      'Integrações básicas'
+    ]
   },
   professional: {
     name: 'Professional',
@@ -74,14 +63,13 @@ export const PLANS: Record<
     currency: 'brl',
     interval: 'month',
     features: [
-      'Até 50 vagas abertas simultâneas',
-      'Todos os recursos inclusos',
-      'IA para análise de candidatos',
-      'Relatórios e analytics',
+      'Até 50 vagas ativas',
+      'IA avançada para matching',
+      'Analytics completo',
       'Suporte prioritário',
-      'Todas as integrações',
-      'Automação de workflows',
-    ],
+      'Integrações avançadas',
+      'API personalizada'
+    ]
   },
   enterprise: {
     name: 'Enterprise',
@@ -90,19 +78,17 @@ export const PLANS: Record<
     currency: 'brl',
     interval: 'month',
     features: [
-      'Até 200 vagas abertas simultâneas',
-      'Todos os recursos inclusos',
-      'IA para análise de candidatos',
-      'Relatórios e analytics avançados',
-      'Suporte 24/7 dedicado',
-      'Integrações completas',
-      'Automação avançada',
-      'API personalizada',
-      'Treinamento da equipe',
+      'Vagas ilimitadas',
+      'IA avançada para matching',
+      'Analytics completo',
+      'Suporte dedicado 24/7',
+      'Onboarding personalizado',
       'SLA garantido',
-    ],
-  },
-};
+      'Compliance avançado',
+      'Relatórios customizados'
+    ]
+  }
+} as const
 
 // Utilitário opcional de formatação (caso exiba valores vindos do Stripe)
 export const formatPrice = (price: number, currency = 'BRL') =>
