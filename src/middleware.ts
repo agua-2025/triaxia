@@ -95,6 +95,8 @@ export async function middleware(request: NextRequest) {
     '/activate',
     '/login',
     '/pricing',
+    '/pricing/success',
+    '/pricing/cancel',
     '/purchase-success',
     '/',
     '/api/'

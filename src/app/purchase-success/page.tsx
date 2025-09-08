@@ -38,10 +38,17 @@ export default function PurchaseSuccessPage() {
   }, [emailParam, tenantParam]);
 
   useEffect(() => {
-    if (!sessionId) return;
-    if (ranOnce.current) return;
+    if (!sessionId) {
+      console.log('[PurchaseSuccess] Sem sessionId, não finalizando');
+      return;
+    }
+    if (ranOnce.current) {
+      console.log('[PurchaseSuccess] Já executou uma vez, pulando');
+      return;
+    }
     ranOnce.current = true;
 
+    console.log('[PurchaseSuccess] Executando finalização');
     const finalize = async () => {
       setState({ status: 'loading' });
       try {
