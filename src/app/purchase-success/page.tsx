@@ -45,13 +45,18 @@ export default function PurchaseSuccessPage() {
     const finalize = async () => {
       setState({ status: 'loading' });
       try {
+        console.log('[PurchaseSuccess] Iniciando finalização para session:', sessionId);
         const res = await fetch('/api/stripe/finalize', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ session_id: sessionId }),
         });
+        
+        console.log('[PurchaseSuccess] Resposta da API:', res.status, res.statusText);
+        
         if (!res.ok) {
           const txt = await res.text().catch(() => '');
+          console.error('[PurchaseSuccess] Erro na API:', txt);
           setState({
             status: 'error',
             message: txt || 'Falha ao finalizar a compra.',
@@ -59,11 +64,13 @@ export default function PurchaseSuccessPage() {
           return;
         }
         const data = await res.json().catch(() => ({}));
+        console.log('[PurchaseSuccess] Dados recebidos:', data);
         setState({
           status: 'success',
           message: data?.message || 'Compra finalizada!',
         });
       } catch (e: any) {
+        console.error('[PurchaseSuccess] Erro de rede:', e);
         setState({
           status: 'error',
           message: e?.message || 'Erro de rede ao finalizar.',
