@@ -262,16 +262,8 @@ function redirectToLogin(request: NextRequest, pathname: string, tenantContext: 
 function handleIntelligentRedirects(request: NextRequest, authResult: AuthResult, tenantContext: TenantContext): NextResponse {
   const { pathname } = request.nextUrl
   
-  // Redirecionamento de root para dashboard apropriado
-  if (pathname === '/' && authResult.isAuthenticated) {
-    if (authResult.isSuperAdmin) {
-      return NextResponse.redirect(new URL('/system-admin', request.url))
-    } else if (tenantContext.slug) {
-      return NextResponse.redirect(new URL(`/dashboard`, request.url))
-    } else {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-  }
+  // Permitir acesso à home page mesmo para usuários autenticados
+  // Remover redirecionamento automático da rota '/'
   
   return NextResponse.next()
 }
