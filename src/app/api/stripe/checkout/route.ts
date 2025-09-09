@@ -22,15 +22,7 @@ type Body = {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar autenticação
-    const { user, error: authError } = await requireAuth(request)
-    
-    if (authError) {
-      return authError
-    }
-    
     console.log('=== STRIPE CHECKOUT DEBUG START ===');
-    console.log('Usuário autenticado:', user!.email);
     console.log('Environment variables check:', {
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET',
       STRIPE_PRICE_STARTER: process.env.STRIPE_PRICE_STARTER || 'NOT SET',
