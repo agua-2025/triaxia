@@ -37,13 +37,21 @@ function extractTenantFromPath(pathname: string) {
 
 export async function middleware(request: NextRequest) {
   try {
+    const pathname = request.nextUrl.pathname;
+    
     // Não interceptar rotas do Stripe (checkout/webhook/etc.)
-    if (request.nextUrl.pathname.startsWith('/api/stripe/')) {
+    if (pathname.startsWith('/api/stripe/')) {
       return NextResponse.next();
     }
 
-  const host = request.headers.get('host') ?? '';
-  const pathname = request.nextUrl.pathname;
+    // Skip middleware for static files and Next.js internal paths
+    if (pathname.startsWith('/_next/') || 
+        pathname.startsWith('/favicon.ico') ||
+        pathname.includes('.')) {
+      return NextResponse.next();
+    }
+
+    const host = request.headers.get('host') ?? '';
 
   // Verifica se é um subdomínio de tenant
   const tenantFromSubdomain = extractTenantFromSubdomain(host);
@@ -55,7 +63,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  const supabaseResponse = NextResponse.next({ request });
+  let supabaseResponse = NextResponse.next({ request });
+
+  // Skip Supabase auth for public/static routes
+  if (pathname === '/' || pathname === '/login' || pathname === '/pricing' || 
+      pathname.startsWith('/activate') || pathname.startsWith('/api/')) {
+    return supabaseResponse;
+  }
 
   // Supabase SSR (cookies)
   const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/['"]/g, '');
@@ -63,7 +77,7 @@ export async function middleware(request: NextRequest) {
 
   if (!supabaseUrl || !supabaseKey) {
     console.error('Missing Supabase environment variables');
-    return NextResponse.next();
+    return supabaseResponse;
   }
 
   const supabase = createServerClient(
