@@ -15,16 +15,16 @@ export async function GET(request: NextRequest) {
       return authError
     }
     
-    const tenant = await getCurrentTenant(request)
+    const tenantContext = await getCurrentTenant(request)
     
-    if (!tenant) {
+    if (!tenantContext.tenant || !tenantContext.id) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
       )
     }
 
-    const projects = await getProjectsByTenant(tenant)
+    const projects = await getProjectsByTenant(tenantContext.id)
     return NextResponse.json({ projects })
   } catch (error) {
     console.error('Error fetching projects:', error)
@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
       return authError
     }
     
-    const tenant = await getCurrentTenant(request)
+    const tenantContext = await getCurrentTenant(request)
     
-    if (!tenant) {
+    if (!tenantContext.tenant || !tenantContext.id) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const project = await createProjectForTenant(tenant, {
+    const project = await createProjectForTenant(tenantContext.id, {
       name,
       description,
       userId: user!.id

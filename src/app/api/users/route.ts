@@ -15,16 +15,16 @@ export async function GET(request: NextRequest) {
       return authError
     }
     
-    const tenant = await getCurrentTenant(request)
+    const tenantContext = await getCurrentTenant(request)
     
-    if (!tenant) {
+    if (!tenantContext.tenant || !tenantContext.id) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
       )
     }
 
-    const users = await getUsersByTenant(tenant)
+    const users = await getUsersByTenant(tenantContext.id)
     return NextResponse.json({ users })
   } catch (error) {
     console.error('Error fetching users:', error)
@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
       return authError
     }
     
-    const tenant = await getCurrentTenant(request)
+    const tenantContext = await getCurrentTenant(request)
     
-    if (!tenant) {
+    if (!tenantContext.tenant || !tenantContext.id) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
@@ -63,13 +63,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const newUser = await createUserForTenant(tenant, {
+    const newUser = await createUserForTenant(tenantContext.id, {
       email,
       name,
       role,
     })
 
-    return NextResponse.json({ user }, { status: 201 })
+    return NextResponse.json({ user: newUser }, { status: 201 })
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json(

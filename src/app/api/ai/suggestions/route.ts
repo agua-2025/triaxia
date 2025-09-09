@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
       return authError
     }
     
-    const tenant = await getCurrentTenant(request)
+    const tenantContext = await getCurrentTenant(request)
     
-    if (!tenant) {
+    if (!tenantContext.tenant || !tenantContext.id) {
       return NextResponse.json(
         { error: 'Tenant not found' },
         { status: 400 }
