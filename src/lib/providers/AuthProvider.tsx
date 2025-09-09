@@ -19,7 +19,7 @@ interface AuthProviderProps {
 }
 
 // Rotas que não precisam de autenticação
-const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password', '/activate']
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/activate']
 
 // Rotas que devem redirecionar usuários autenticados
 const AUTH_ROUTES = ['/login', '/register']
