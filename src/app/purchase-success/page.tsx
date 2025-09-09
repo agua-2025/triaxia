@@ -24,9 +24,38 @@ export default function PurchaseSuccessPage() {
   const [email, setEmail] = useState('');
   const [tenantName, setTenantName] = useState('');
   const [state, setState] = useState<FinalizeState>({ status: 'idle' });
+  const [showPage, setShowPage] = useState(false);
+  const [minimumTimeElapsed, setMinimumTimeElapsed] = useState(false);
 
   // Evita rodar efeito duas vezes no modo DEV (StrictMode)
   const ranOnce = useRef(false);
+  
+  // Evita que a página feche muito rapidamente
+  useEffect(() => {
+    // Mostra a página imediatamente
+    setShowPage(true);
+    
+    // Garante um tempo mínimo de visualização de 3 segundos
+    const timer = setTimeout(() => {
+      setMinimumTimeElapsed(true);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Evita fechamento acidental da página
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!minimumTimeElapsed) {
+        e.preventDefault();
+        e.returnValue = 'Sua compra está sendo processada. Tem certeza que deseja sair?';
+        return e.returnValue;
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [minimumTimeElapsed]);
 
   const sessionId = searchParams?.get('session_id') ?? '';
   const emailParam = searchParams?.get('email') ?? '';
@@ -93,6 +122,17 @@ export default function PurchaseSuccessPage() {
     setState({ status: 'idle' });
   };
 
+  if (!showPage) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando sua confirmação de compra...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
@@ -114,6 +154,14 @@ export default function PurchaseSuccessPage() {
               ? 'Ops! Algo deu errado'
               : '🎉 Pagamento realizado com sucesso!'}
           </h1>
+          
+          {!minimumTimeElapsed && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-700">
+                ⏱️ Processando sua compra... Por favor, não feche esta página.
+              </p>
+            </div>
+          )}
 
           <p className="text-lg text-gray-600 mb-6">
             {tenantName ? (
