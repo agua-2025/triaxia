@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateAndUseActivationToken } from '@/lib/auth/activation-service';
+import { validateAndUseActivationToken, validateActivationTokenOnly } from '@/lib/auth/activation-service';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Apenas validar o token sem usá-lo
-    const validationResult = await validateAndUseActivationToken({ token });
+    const validationResult = await validateActivationTokenOnly({ token });
     
     return NextResponse.json({
       isValid: validationResult.isValid,

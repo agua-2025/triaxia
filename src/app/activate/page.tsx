@@ -93,9 +93,13 @@ export default function ActivatePage() {
 
       setStatus('success');
       
-      // Redirecionar após 3 segundos
+      // Redirecionar após 3 segundos com informações do tenant
       setTimeout(() => {
-        router.push('/login?message=account-activated');
+        const tenantSlug = result.user?.tenant?.slug || tokenData?.tenantSlug;
+        const loginUrl = tenantSlug 
+          ? `/login?message=account-activated&tenant=${tenantSlug}`
+          : '/login?message=account-activated';
+        router.push(loginUrl);
       }, 3000);
     } catch (err) {
       setStatus('error');

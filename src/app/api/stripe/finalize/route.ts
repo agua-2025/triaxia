@@ -58,24 +58,41 @@ export async function POST(req: Request) {
       (session.metadata?.tenantSlug as string | undefined) ?? '';
     const plan = (session.metadata?.plan as string | undefined) ?? 'starter';
 
-    // tenta localizar tenant
-    let tenant =
-      (tenantSlug
-        ? await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
-        : null) ??
-      (session.customer
-        ? await prisma.tenant.findUnique({
-            where: { customerId: String(session.customer) },
-          })
-        : null) ??
-      (session.subscription
-        ? await prisma.tenant.findUnique({
-            where: { subscriptionId: String(session.subscription) },
-          })
-        : null);
+    // tenta localizar tenant - PRIORIZA tenantSlug para evitar reutilização incorreta
+    let tenant = null;
+    
+    // 1. Primeiro, busca por tenantSlug se fornecido
+    if (tenantSlug) {
+      tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } });
+      // Se tenantSlug foi fornecido mas não encontrado, NÃO busca por outros critérios
+      // para evitar reutilizar tenants existentes
+    } else {
+      // 2. Se não há tenantSlug definido, busca por customerId
+      if (session.customer) {
+        tenant = await prisma.tenant.findUnique({
+          where: { customerId: String(session.customer) },
+        });
+      }
+      
+      // 3. Se ainda não encontrou, busca por subscriptionId
+      if (!tenant && session.subscription) {
+        tenant = await prisma.tenant.findUnique({
+          where: { subscriptionId: String(session.subscription) },
+        });
+      }
+    }
 
     // cria/atualiza tenant
     if (!tenant) {
+      // Verifica se já existe um tenant com este customerId ou subscriptionId
+      const existingTenantWithCustomer = session.customer 
+        ? await prisma.tenant.findUnique({ where: { customerId: String(session.customer) } })
+        : null;
+      
+      const existingTenantWithSubscription = session.subscription
+        ? await prisma.tenant.findUnique({ where: { subscriptionId: String(session.subscription) } })
+        : null;
+      
       tenant = await prisma.tenant.create({
         data: {
           name: tenantSlug
@@ -85,8 +102,10 @@ export async function POST(req: Request) {
           domain: `${tenantSlug || `t-${session_id.slice(-8)}`}.triaxia.com.br`,
           plan,
           status: 'active',
-          customerId: String(session.customer),
-          subscriptionId: (session.subscription as string) || null,
+          // Só define customerId se não houver conflito
+          customerId: existingTenantWithCustomer ? null : String(session.customer),
+          // Só define subscriptionId se não houver conflito
+          subscriptionId: existingTenantWithSubscription ? null : (session.subscription as string) || null,
           settings: {
             onboardingCompleted: false,
             setupStep: 'company_info',

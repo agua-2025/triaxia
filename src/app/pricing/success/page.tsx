@@ -1,48 +1,76 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Loader2, ArrowRight, Sparkles, Shield, Zap, Rocket, Mail, Calendar, Settings } from 'lucide-react'
-import { Logo } from '@/components/ui/logo'
-import Link from 'next/link'
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  CheckCircle,
+  Loader2,
+  ArrowRight,
+  Sparkles,
+  Shield,
+  Zap,
+  Rocket,
+  Mail,
+  Calendar,
+  Settings,
+} from 'lucide-react';
+import { Logo } from '@/components/ui/logo';
+import Link from 'next/link';
 
 export default function SuccessPage() {
-  const [loading, setLoading] = useState(true)
-  const [sessionData, setSessionData] = useState<any>(null)
-  const searchParams = useSearchParams()
-  const sessionId = searchParams?.get('session_id')
+  const [loading, setLoading] = useState(true);
+  const [sessionData, setSessionData] = useState<any>(null);
+  const searchParams = useSearchParams();
+  const sessionId = searchParams?.get('session_id');
 
   useEffect(() => {
     if (sessionId) {
-      // Aqui você pode fazer uma chamada para verificar o status da sessão
-      // Por enquanto, vamos simular um delay
-      setTimeout(() => {
-        setSessionData({
-          customerEmail: 'usuario@exemplo.com',
-          tenantSlug: 'minha-empresa',
-          plan: 'professional'
-        })
-        setLoading(false)
-      }, 2000)
+      const fetchSession = async () => {
+        try {
+          const response = await fetch(
+            `/api/pricing/success?session_id=${sessionId}`
+          );
+          if (!response.ok) {
+            throw new Error('Failed to fetch session data');
+          }
+          const data = await response.json();
+          setSessionData(data);
+        } catch (error) {
+          console.error(error);
+          setSessionData(null); // Garante que a tela de erro seja mostrada
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchSession();
     } else {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [sessionId])
+  }, [sessionId]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 flex items-center justify-center relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                             radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                             radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`,
+            }}
+          />
         </div>
-        
+
         <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl max-w-lg w-full mx-4 relative">
           <CardContent className="pt-8 pb-8">
             <div className="text-center">
@@ -54,13 +82,18 @@ export default function SuccessPage() {
                   <Sparkles className="w-3 h-3 text-white" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">Processando seu pagamento</h2>
-              <p className="text-gray-600 leading-relaxed">Aguarde enquanto confirmamos sua assinatura e preparamos sua conta.</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Processando seu pagamento
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                Aguarde enquanto confirmamos sua assinatura e preparamos sua
+                conta.
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!sessionId || !sessionData) {
@@ -68,20 +101,28 @@ export default function SuccessPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 flex items-center justify-center relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                             radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                             radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`,
+            }}
+          />
         </div>
-        
+
         <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl max-w-lg w-full mx-4 relative">
           <CardContent className="pt-8 pb-8">
             <div className="text-center">
               <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Shield className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">Sessão não encontrada</h2>
-              <p className="text-gray-600 mb-6 leading-relaxed">Não foi possível verificar seu pagamento. Por favor, tente novamente.</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Sessão não encontrada
+              </h2>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Não foi possível verificar seu pagamento. Por favor, tente
+                novamente.
+              </p>
               <Link href="/pricing">
                 <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                   <ArrowRight className="w-4 h-4 mr-2" />
@@ -92,19 +133,22 @@ export default function SuccessPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                           radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`
-        }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                           radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)`,
+          }}
+        />
       </div>
-      
+
       {/* Header */}
       <div className="relative z-10 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
@@ -117,7 +161,7 @@ export default function SuccessPage() {
           </div>
         </div>
       </div>
-      
+
       <div className="relative z-10 container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Welcome Section */}
@@ -131,13 +175,18 @@ export default function SuccessPage() {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Bem-vindo à <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Triaxia</span>!
+              Bem-vindo à{' '}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Triaxia
+              </span>
+              !
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              Sua assinatura foi ativada com sucesso. Agora você pode explorar todas as funcionalidades da nossa plataforma.
+              Sua assinatura foi ativada com sucesso. Agora você pode explorar
+              todas as funcionalidades da nossa plataforma.
             </p>
           </div>
-          
+
           {/* Success Card */}
           <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl mb-8">
             <CardHeader className="text-center pb-4">
@@ -148,7 +197,7 @@ export default function SuccessPage() {
                 Sua jornada na Triaxia começa agora
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-8">
               {/* Account Details Grid */}
               <div className="grid md:grid-cols-2 gap-6">
@@ -157,16 +206,24 @@ export default function SuccessPage() {
                     <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
                       <Mail className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-blue-900">Detalhes da Conta</h3>
+                    <h3 className="text-lg font-bold text-blue-900">
+                      Detalhes da Conta
+                    </h3>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-blue-700 font-medium">Email:</span>
-                      <span className="text-blue-900 font-semibold">{sessionData.customerEmail}</span>
+                      <span className="text-blue-900 font-semibold">
+                        {sessionData.customerEmail}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-blue-700 font-medium">Empresa:</span>
-                      <span className="text-blue-900 font-semibold">{sessionData.tenantSlug}</span>
+                      <span className="text-blue-700 font-medium">
+                        Empresa:
+                      </span>
+                      <span className="text-blue-900 font-semibold">
+                        {sessionData.tenantSlug}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-blue-700 font-medium">Plano:</span>
@@ -182,22 +239,28 @@ export default function SuccessPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/50 rounded-2xl p-6">
                   <div className="flex items-center mb-4">
                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-3">
                       <Rocket className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-green-900">Próximos Passos</h3>
+                    <h3 className="text-lg font-bold text-green-900">
+                      Próximos Passos
+                    </h3>
                   </div>
                   <ul className="space-y-3 text-green-800">
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Conta configurada automaticamente</span>
+                      <span className="text-sm">
+                        Conta configurada automaticamente
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Email de boas-vindas enviado</span>
+                      <span className="text-sm">
+                        Email de boas-vindas enviado
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
@@ -205,7 +268,9 @@ export default function SuccessPage() {
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Plataforma pronta para uso</span>
+                      <span className="text-sm">
+                        Plataforma pronta para uso
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -221,7 +286,10 @@ export default function SuccessPage() {
                   </Button>
                 </Link>
                 <Link href="/dashboard" className="flex-1">
-                  <Button variant="outline" className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-lg">
+                  <Button
+                    variant="outline"
+                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl font-semibold transition-all duration-300 text-lg"
+                  >
                     <Rocket className="w-5 h-5 mr-2" />
                     Ir para Dashboard
                   </Button>
@@ -233,9 +301,12 @@ export default function SuccessPage() {
           {/* Timeline Card */}
           <Card className="bg-white/90 backdrop-blur-xl border-0 shadow-2xl">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-gray-900 mb-2">Sua Jornada na Triaxia</CardTitle>
+              <CardTitle className="text-2xl text-gray-900 mb-2">
+                Sua Jornada na Triaxia
+              </CardTitle>
               <CardDescription className="text-gray-600">
-                Acompanhe os próximos passos para aproveitar ao máximo nossa plataforma
+                Acompanhe os próximos passos para aproveitar ao máximo nossa
+                plataforma
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -249,12 +320,15 @@ export default function SuccessPage() {
                       <span className="text-white text-xs font-bold">1</span>
                     </div>
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Configuração Automática</h4>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">
+                    Configuração Automática
+                  </h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Sua instância personalizada está sendo criada com todas as configurações necessárias
+                    Sua instância personalizada está sendo criada com todas as
+                    configurações necessárias
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="relative mb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
@@ -264,12 +338,15 @@ export default function SuccessPage() {
                       <span className="text-white text-xs font-bold">2</span>
                     </div>
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Email de Boas-vindas</h4>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">
+                    Email de Boas-vindas
+                  </h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Você receberá instruções detalhadas e dicas para começar da melhor forma
+                    Você receberá instruções detalhadas e dicas para começar da
+                    melhor forma
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="relative mb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
@@ -279,13 +356,16 @@ export default function SuccessPage() {
                       <span className="text-white text-xs font-bold">3</span>
                     </div>
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">Onboarding Guiado</h4>
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">
+                    Onboarding Guiado
+                  </h4>
                   <p className="text-gray-600 text-sm leading-relaxed">
-                    Nossa equipe especializada te ajudará a configurar tudo perfeitamente
+                    Nossa equipe especializada te ajudará a configurar tudo
+                    perfeitamente
                   </p>
                 </div>
               </div>
-              
+
               {/* Support Section */}
               <div className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200/50 rounded-2xl p-6">
                 <div className="text-center">
@@ -293,10 +373,14 @@ export default function SuccessPage() {
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
                       <Zap className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900">Suporte Premium Incluído</h3>
+                    <h3 className="text-xl font-bold text-gray-900">
+                      Suporte Premium Incluído
+                    </h3>
                   </div>
                   <p className="text-gray-700 mb-4 leading-relaxed">
-                    Durante seu período de trial, você terá acesso completo ao nosso suporte especializado para garantir o melhor aproveitamento da plataforma.
+                    Durante seu período de trial, você terá acesso completo ao
+                    nosso suporte especializado para garantir o melhor
+                    aproveitamento da plataforma.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 px-4 py-2">
@@ -315,5 +399,5 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

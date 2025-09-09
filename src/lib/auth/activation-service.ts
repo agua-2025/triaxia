@@ -96,6 +96,46 @@ export async function createActivationToken(
   }
 }
 
+// Função para apenas validar o token sem consumi-lo
+export async function validateActivationTokenOnly(
+  params: { token: string }
+) {
+  try {
+    const decoded = validateActivationToken(params.token);
+    if (!decoded)
+      return { isValid: false, error: 'Token inválido ou expirado' };
+
+    const tokenHash = hashToken(params.token);
+    const dbToken = await prisma.activationToken.findUnique({
+      where: { tokenHash },
+    });
+    if (!dbToken) return { isValid: false, error: 'Token não encontrado' };
+    if (dbToken.isUsed) return { isValid: false, error: 'Token já utilizado' };
+    if (dbToken.expiresAt < new Date()) {
+      return { isValid: false, error: 'Token expirado' };
+    }
+    if (
+      dbToken.email !== decoded.email ||
+      dbToken.userId !== decoded.userId ||
+      dbToken.tenantId !== decoded.tenantId
+    ) {
+      return { isValid: false, error: 'Dados do token inconsistentes' };
+    }
+
+    return {
+      isValid: true,
+      data: {
+        email: decoded.email,
+        userId: decoded.userId,
+        tenantId: decoded.tenantId,
+      },
+    };
+  } catch (err) {
+    console.error('validateActivationTokenOnly error:', err);
+    return { isValid: false, error: 'Erro interno' };
+  }
+}
+
 export async function validateAndUseActivationToken(
   params: ValidateActivationTokenParams
 ) {

@@ -197,34 +197,63 @@ export default function PurchaseSuccessPage() {
             <div className="flex items-center justify-center mb-4">
               <Mail className="w-8 h-8 text-blue-600 mr-3" />
               <h2 className="text-xl font-semibold text-blue-900">
-                Verifique seu email para ativar sua conta
+                Próximos Passos para Acessar sua Conta
               </h2>
             </div>
 
             <div className="text-left space-y-4">
               <Step
                 n={1}
-                title="Email de ativação enviado"
+                title="📧 Verifique seu email"
                 desc={
                   <>
-                    Enviamos um email para{' '}
+                    Enviamos um email de ativação para{' '}
                     <span className="font-medium text-blue-600">
                       {email || 'seu email'}
                     </span>
-                    .
+                    . Verifique sua caixa de entrada e spam.
                   </>
                 }
               />
               <Step
                 n={2}
-                title="Clique no link de ativação"
-                desc="Abra o email e clique em “Ativar conta” para criar sua senha."
+                title="🔐 Crie sua senha"
+                desc="Clique no link 'Ativar Conta' no email e defina uma senha segura para sua conta."
               />
               <Step
                 n={3}
-                title="Acesse sua conta"
-                desc="Após ativar, faça login e comece a usar o sistema."
+                title="🚀 Faça login e comece"
+                desc={
+                  <>
+                    Após criar sua senha, acesse{' '}
+                    <span className="font-medium text-blue-600">
+                      {typeof window !== 'undefined' ? window.location.origin : ''}/login
+                    </span>
+                    {' '}com seu email e senha.
+                  </>
+                }
               />
+            </div>
+
+            {/* Botão de acesso direto ao login */}
+            <div className="mt-6 pt-4 border-t border-blue-200">
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-3">
+                  💡 <strong>Dica:</strong> Após ativar sua conta, use este link para fazer login:
+                </p>
+                <a 
+                  href="/login"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <span>Página de Login</span>
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 1h6m0 0v6m0-6L10 11" />
+                  </svg>
+                </a>
+                <p className="text-xs text-blue-600 mt-2">
+                  ⚠️ Só funciona após ativar sua conta pelo email
+                </p>
+              </div>
             </div>
           </div>
 

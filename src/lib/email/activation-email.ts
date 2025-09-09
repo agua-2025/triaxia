@@ -94,21 +94,51 @@ function generateActivationEmailHtml(
   <div style="font-family: system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; max-width:600px; margin:0 auto; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden">
     <div style="background:#111827; color:#fff; padding:28px 24px; text-align:center">
       <h1 style="margin:0; font-size:24px; font-weight:700">Bem-vindo à ${esc(data.tenantName)}!</h1>
-      <p style="margin:8px 0 0 0; opacity:.9">Ative sua conta e crie sua senha</p>
+      <p style="margin:8px 0 0 0; opacity:.9">Sua conta foi criada com sucesso</p>
     </div>
     <div style="padding:28px 24px">
       <p>Olá <strong>${esc(data.name)}</strong>,</p>
-      <p>Para começar a usar a plataforma, ative sua conta:</p>
+      <p>Parabéns! Sua conta na <strong>${esc(data.tenantName)}</strong> foi criada com sucesso. Para começar a usar a plataforma, você precisa ativar sua conta seguindo os passos abaixo:</p>
+      
+      <div style="background:#f0f9ff; border:1px solid #0ea5e9; border-radius:8px; padding:20px; margin:20px 0;">
+        <h3 style="margin:0 0 12px 0; color:#0369a1; font-size:16px;">📋 Próximos Passos:</h3>
+        <ol style="margin:0; padding-left:20px; color:#0369a1;">
+          <li style="margin-bottom:8px;"><strong>Clique no botão abaixo</strong> para ativar sua conta</li>
+          <li style="margin-bottom:8px;"><strong>Crie sua senha</strong> na página de ativação</li>
+          <li style="margin-bottom:8px;"><strong>Faça login</strong> com seu email e nova senha</li>
+          <li><strong>Configure sua empresa</strong> no processo de onboarding</li>
+        </ol>
+      </div>
+      
       <div style="text-align:center; margin:24px 0">
-        <a href="${data.activationUrl}" style="display:inline-block; background:#1d4ed8; color:#fff; padding:14px 24px; border-radius:8px; text-decoration:none; font-weight:600">🚀 Ativar minha conta</a>
+        <a href="${data.activationUrl}" style="display:inline-block; background:#1d4ed8; color:#fff; padding:16px 32px; border-radius:8px; text-decoration:none; font-weight:600; font-size:16px;">🚀 Ativar Minha Conta</a>
       </div>
-      <div style="background:#fef3c7; border:1px solid #f59e0b; color:#92400e; border-radius:8px; padding:12px;">
-        <strong>Importante:</strong> este link expira em <strong>${data.expiresIn} horas</strong>.
+      
+      <div style="background:#fef3c7; border:1px solid #f59e0b; color:#92400e; border-radius:8px; padding:16px; margin:20px 0;">
+        <div style="display:flex; align-items:center; margin-bottom:8px;">
+          <span style="font-size:18px; margin-right:8px;">⚠️</span>
+          <strong>Importante - Link Temporário</strong>
+        </div>
+        <p style="margin:0; font-size:14px;">Este link de ativação expira em <strong>${data.expiresIn} horas</strong>. Após esse período, você precisará solicitar um novo link de ativação.</p>
       </div>
-      <p style="font-size:13px; color:#6b7280; margin-top:16px">Se o botão não funcionar, copie o link:<br><a href="${data.activationUrl}">${data.activationUrl}</a></p>
+      
+      <div style="background:#f0fdf4; border:1px solid #22c55e; color:#166534; border-radius:8px; padding:16px; margin:20px 0;">
+        <div style="display:flex; align-items:center; margin-bottom:8px;">
+          <span style="font-size:18px; margin-right:8px;">💡</span>
+          <strong>Dica</strong>
+        </div>
+        <p style="margin:0; font-size:14px;">Após ativar sua conta, você será direcionado para um processo de configuração inicial onde poderá personalizar sua experiência na plataforma.</p>
+      </div>
+      
+      <div style="border-top:1px solid #e5e7eb; padding-top:20px; margin-top:24px;">
+        <p style="font-size:13px; color:#6b7280; margin:0 0 8px 0;"><strong>Problemas com o botão?</strong></p>
+        <p style="font-size:13px; color:#6b7280; margin:0;">Copie e cole este link no seu navegador:</p>
+        <p style="font-size:12px; color:#6b7280; word-break:break-all; background:#f9fafb; padding:8px; border-radius:4px; margin:8px 0 0 0;">${data.activationUrl}</p>
+      </div>
     </div>
-    <div style="background:#f9fafb; padding:20px; text-align:center; font-size:12px; color:#6b7280">
-      Este e-mail foi enviado para <strong>${esc(data.email)}</strong>
+    <div style="background:#f9fafb; padding:20px; text-align:center; font-size:12px; color:#6b7280; border-top:1px solid #e5e7eb;">
+      <p style="margin:0 0 8px 0;">Este e-mail foi enviado para <strong>${esc(data.email)}</strong></p>
+      <p style="margin:0;">Se você não solicitou esta conta, pode ignorar este e-mail com segurança.</p>
     </div>
   </div>
   `.trim();

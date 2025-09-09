@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Mail, Lock, Shield, ArrowRight } from 'lucide-react'
+import { Loader2, Mail, Lock, Shield, ArrowRight, CheckCircle, Info } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -18,8 +18,17 @@ export default function LoginPage() {
   const [loadingMessage, setLoadingMessage] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [activationMessage, setActivationMessage] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+
+  useEffect(() => {
+    const messageParam = searchParams?.get('message')
+    if (messageParam === 'account-activated') {
+      setActivationMessage('Conta ativada com sucesso! Agora você pode fazer login com seu email e senha.')
+    }
+  }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,6 +74,11 @@ export default function LoginPage() {
             targetUrl = `/${tenant}/dashboard`
           }
           
+          // Se é um usuário recém-ativado com tenant, redirecionar para onboarding
+          if (activationMessage && tenant) {
+            targetUrl = `/${tenant}/onboarding`
+          }
+          
           setTimeout(() => {
             router.push(targetUrl)
           }, 1000)
@@ -99,6 +113,26 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Mensagem de ativação bem-sucedida */}
+            {activationMessage && (
+              <Alert className="border-green-200 bg-green-50 mb-4">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  {activationMessage}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Instruções para novos usuários */}
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start space-x-2">
+                <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Novo usuário?</p>
+                  <p>Use o <strong>email</strong> que você forneceu na compra e a <strong>senha</strong> que você criou durante a ativação da conta.</p>
+                </div>
+              </div>
+            </div>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -167,8 +201,16 @@ export default function LoginPage() {
                   )}
                 </Button>
 
-                <div className="text-center text-sm text-gray-600">
-                  🔒 Acesso restrito apenas para administradores autorizados
+                <div className="text-center space-y-2">
+                  <Link 
+                    href="/forgot-password" 
+                    className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Esqueceu sua senha?
+                  </Link>
+                  <div className="text-sm text-gray-600">
+                    🔒 Acesso restrito apenas para administradores autorizados
+                  </div>
                 </div>
               </div>
             </form>

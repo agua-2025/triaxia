@@ -4,6 +4,7 @@ import { validatePasswordSecurity } from '@/lib/auth/password-security'
 import { logAccountActivation, logPasswordValidation, auditLogger } from '@/lib/audit/audit-logger'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
  * Ativa uma conta de usuário usando token de ativação
@@ -171,11 +172,29 @@ export async function POST(request: NextRequest) {
     const saltRounds = 14
     const hashedPassword = await bcrypt.hash(password, saltRounds)
     
+    // Criar usuário no Supabase Auth
+    const supabaseAdmin = createAdminClient()
+    const { data: supabaseUser, error: supabaseError } = await supabaseAdmin.auth.admin.createUser({
+      email: user.email,
+      password: password,
+      email_confirm: true // Confirmar email automaticamente
+    })
+
+    if (supabaseError) {
+      console.error('Erro ao criar usuário no Supabase:', supabaseError)
+      return NextResponse.json(
+        { error: 'Erro interno ao criar conta de acesso' },
+        { status: 500 }
+      )
+    }
+    
     // Atualizar usuário com dados de ativação
     const activatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
-        // Nota: Não armazenamos senha no Prisma, apenas no Supabase
+        isActive: true,
+        activatedAt: new Date(),
+        supabaseUserId: supabaseUser.user.id, // Armazenar ID do Supabase
         updatedAt: new Date()
       },
       include: {
