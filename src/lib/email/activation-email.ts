@@ -2,12 +2,12 @@ import * as nodemailer from 'nodemailer';
 import { z } from 'zod';
 
 const mailer = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.zoho.com',
-  port: Number(process.env.SMTP_PORT || 587),
-  secure: Number(process.env.SMTP_PORT || 587) === 465, // 465=SSL, 587=STARTTLS
+  host: process.env.EMAIL_SERVER_HOST || process.env.SMTP_HOST || 'smtp.zoho.com',
+  port: Number(process.env.EMAIL_SERVER_PORT || process.env.SMTP_PORT || 587),
+  secure: Number(process.env.EMAIL_SERVER_PORT || process.env.SMTP_PORT || 587) === 465, // 465=SSL, 587=STARTTLS
   auth: {
-    user: process.env.SMTP_USER!, // contato@triaxia.com.br
-    pass: (process.env.SMTP_PASS || '').trim(), // senha de app Zoho
+    user: process.env.EMAIL_SERVER_USER || process.env.SMTP_USER!, // contato@triaxia.com.br
+    pass: (process.env.EMAIL_SERVER_PASSWORD || process.env.SMTP_PASS || '').trim(), // senha de app Zoho
   },
   tls: { minVersion: 'TLSv1.2' },
 });
@@ -61,7 +61,7 @@ export async function sendActivationEmail(
     });
 
     const info = await mailer.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER!,
+      from: process.env.EMAIL_FROM || process.env.SMTP_FROM || process.env.EMAIL_SERVER_USER || process.env.SMTP_USER!,
       to: v.email,
       replyTo:
         process.env.SMTP_REPLY_TO ||

@@ -11,6 +11,8 @@ const PUBLIC_ROUTES = [
   '/api/auth',
   '/api/stripe/webhook',
   '/api/stripe/checkout',
+  '/api/stripe/finalize',
+  '/purchase-success',
   '/pricing',
   '/about',
   '/contact',
