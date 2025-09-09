@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     // Resolve a origem para URLs de retorno
     const hdr = await headers();
     const origin =
-      process.env.NEXT_PUBLIC_APP_URL ??
+      (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('http') ? process.env.NEXT_PUBLIC_APP_URL : null) ??
       process.env.APP_URL ??
       hdr.get('origin') ??
       'http://localhost:3000';
