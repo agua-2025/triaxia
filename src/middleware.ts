@@ -36,10 +36,11 @@ function extractTenantFromPath(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
-  // Não interceptar rotas do Stripe (checkout/webhook/etc.)
-  if (request.nextUrl.pathname.startsWith('/api/stripe/')) {
-    return NextResponse.next();
-  }
+  try {
+    // Não interceptar rotas do Stripe (checkout/webhook/etc.)
+    if (request.nextUrl.pathname.startsWith('/api/stripe/')) {
+      return NextResponse.next();
+    }
 
   const host = request.headers.get('host') ?? '';
   const pathname = request.nextUrl.pathname;
@@ -57,9 +58,17 @@ export async function middleware(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request });
 
   // Supabase SSR (cookies)
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/['"]/g, '');
+  const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').replace(/['"]/g, '');
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase environment variables');
+    return NextResponse.next();
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/"/g, ''),
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.replace(/"/g, ''),
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -154,16 +163,20 @@ export async function middleware(request: NextRequest) {
     await supabase.auth.getUser();
   }
 
-  if (tenant) {
-    supabaseResponse.headers.set('x-tenant-id', tenant.tenantId);
-    supabaseResponse.headers.set('x-tenant-slug', tenant.tenantSlug);
-  } else {
-    // Garante que páginas globais não recebam cabeçalhos de tenant
-    supabaseResponse.headers.delete('x-tenant-id');
-    supabaseResponse.headers.delete('x-tenant-slug');
-  }
+    if (tenant) {
+      supabaseResponse.headers.set('x-tenant-id', tenant.tenantId);
+      supabaseResponse.headers.set('x-tenant-slug', tenant.tenantSlug);
+    } else {
+      // Garante que páginas globais não recebam cabeçalhos de tenant
+      supabaseResponse.headers.delete('x-tenant-id');
+      supabaseResponse.headers.delete('x-tenant-slug');
+    }
 
-  return supabaseResponse;
+    return supabaseResponse;
+  } catch (error) {
+    console.error('Middleware error:', error);
+    return NextResponse.next();
+  }
 }
 
 export const config = {
