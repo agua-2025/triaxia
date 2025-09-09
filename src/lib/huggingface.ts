@@ -11,7 +11,7 @@ export const hf = apiKey ? new HfInference(apiKey) : null
 
 // Default configuration
 export const AI_CONFIG = {
-  model: process.env.HUGGINGFACE_MODEL ?? 'microsoft/DialoGPT-medium',
+  model: process.env.HUGGINGFACE_MODEL ?? 'meta-llama/Llama-3.2-1B',
   temperature: 0.7,
   max_tokens: 1000,
   apiUrl: 'https://api-inference.huggingface.co/models/',
