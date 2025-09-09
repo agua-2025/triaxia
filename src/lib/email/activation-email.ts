@@ -40,10 +40,8 @@ const activationEmailSchema = z.object({
   expiresInHours: z.number().optional(),
 });
 
-interface ActivationEmailData extends z.infer<typeof activationEmailSchema> {}
-
 export async function sendActivationEmail(
-  data: ActivationEmailData
+  data: z.infer<typeof activationEmailSchema>
 ): Promise<{ success: boolean; error?: string }> {
   const start = Date.now();
   try {
@@ -90,7 +88,7 @@ export async function sendActivationEmail(
 }
 
 function generateActivationEmailHtml(
-  data: ActivationEmailData & { activationUrl: string; expiresIn: number }
+  data: z.infer<typeof activationEmailSchema> & { activationUrl: string; expiresIn: number }
 ): string {
   return `
   <div style="font-family: system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; max-width:600px; margin:0 auto; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden">

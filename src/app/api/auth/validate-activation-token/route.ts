@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateActivationToken } from '@/lib/auth/activation-tokens'
 import { prisma } from '@/lib/prisma'
+import crypto from 'crypto'
 
 /**
  * Valida um token de ativação sem consumi-lo
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Buscar informações do token no banco
-    const tokenHash = require('crypto').createHash('sha256').update(token).digest('hex')
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
     const tokenInfo = await prisma.activationToken.findUnique({
       where: { tokenHash }
     })
