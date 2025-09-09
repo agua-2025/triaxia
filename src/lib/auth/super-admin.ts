@@ -11,8 +11,8 @@ export async function isSuperAdmin(request: NextRequest): Promise<boolean> {
   try {
     // Criar cliente Supabase para verificar autenticação
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/"/g, ''),
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.replace(/"/g, ''),
       {
         cookies: {
           getAll: () => request.cookies.getAll(),
