@@ -13,8 +13,8 @@ export async function requireAuth(request: NextRequest): Promise<{
 }> {
   try {
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/"/g, ''),
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.replace(/"/g, ''),
       {
         cookies: {
           getAll() {
@@ -166,8 +166,8 @@ export async function requireAuthWithTenant(request: NextRequest, tenantSlug: st
 export async function getAuthUser(request: NextRequest): Promise<User | null> {
   try {
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/"/g, ''),
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.replace(/"/g, ''),
       {
         cookies: {
           getAll() {
