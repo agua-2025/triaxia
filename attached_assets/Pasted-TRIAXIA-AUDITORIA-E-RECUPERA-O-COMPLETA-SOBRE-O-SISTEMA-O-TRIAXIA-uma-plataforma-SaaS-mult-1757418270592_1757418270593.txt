@@ -1,0 +1,162 @@
+TRIAXIA - AUDITORIA E RECUPERAÇÃO COMPLETA
+📖 SOBRE O SISTEMA
+O TRIAXIA é uma plataforma SaaS multi-tenant revolucionária de recrutamento com IA. Cada empresa cliente possui seu próprio portal personalizado através de subdomínios (microsoft.triaxia.com.br, carrefour.triaxia.com.br), com isolamento total de dados, branding customizado e funcionalidades específicas por setor.
+Funcionalidades Core:
+•	Sistema multi-tenant com subdomínios automáticos
+•	Personalização completa por empresa (cores, logos, campos)
+•	Upload e análise inteligente de currículos via IA
+•	Sistema completo de vagas e candidaturas
+•	Banco de talentos com matching automático
+________________________________________
+🛠️ STACK TECNOLÓGICA
+•	Frontend/Backend: Next.js 15+ (App Router)
+•	Database: Supabase PostgreSQL
+•	Auth: NextAuth.js + Supabase Auth
+•	Deploy: Vercel
+•	IA: Hugging Face (não OpenAI)
+•	Payments: Stripe
+•	Storage: Supabase Storage
+•	Domínio: triaxia.com.br
+________________________________________
+🔍 AUDITORIA CRÍTICA
+1. 🏗️ ESTRUTURA BASE
+•	[ ] Projeto Next.js 15 configurado corretamente
+•	[ ] TypeScript strict mode ativo
+•	[ ] Middleware multi-tenant funcionando
+•	[ ] Prisma schema atualizado
+•	[ ] Todas dependências instaladas
+2. 🔐 SEGURANÇA (CRÍTICO)
+•	[ ] Isolamento multi-tenant: Zero vazamento entre empresas
+•	[ ] Autenticação: NextAuth + Supabase funcionando
+•	[ ] Validação de dados: Zod em todos endpoints
+•	[ ] Rate limiting: Proteção contra spam/abuse
+•	[ ] CORS: Configurado adequadamente
+•	[ ] Environment vars: Todas seguras e configuradas
+3. 🗄️ BANCO DE DADOS SUPABASE
+•	[ ] Schema Prisma correto e sincronizado
+•	[ ] RLS (Row Level Security) ativo para isolamento
+•	[ ] Migrations aplicadas sem erros
+•	[ ] Índices otimizados para performance
+•	[ ] Backup automático configurado
+4. 🤖 INTEGRAÇÃO HUGGING FACE
+•	[ ] API funcionando corretamente
+•	[ ] Rate limits respeitados
+•	[ ] Error handling implementado
+•	[ ] Fallbacks para falhas da IA
+•	[ ] Processamento async otimizado
+5. ⚡ SISTEMA MULTI-TENANT
+•	[ ] Subdomínios detectados automaticamente
+•	[ ] Criação de novos tenants sem intervenção manual
+•	[ ] Personalização (cores/logos) aplicada em tempo real
+•	[ ] Isolamento 100% testado e validado
+6. 💳 STRIPE INTEGRATION
+•	[ ] Webhook funcionando
+•	[ ] Test mode configurado
+•	[ ] Planos de assinatura ativos
+•	[ ] Error handling completo
+7. 🌐 VERCEL DEPLOY
+•	[ ] Build sem erros
+•	[ ] Environment variables configuradas
+•	[ ] Domínio triaxia.com.br conectado
+•	[ ] SSL ativo
+•	[ ] Performance > 90 Lighthouse
+________________________________________
+🎯 FUNCIONALIDADES QUE DEVEM ESTAR 100% FUNCIONAIS
+SITE PRINCIPAL (triaxia.com.br)
+•	[ ] Landing page carregando
+•	[ ] Sistema de cadastro/login
+•	[ ] Criação automática de tenants
+•	[ ] Página de planos/pricing
+PORTAIS EMPRESARIAIS
+•	[ ] empresa.triaxia.com.br carrega corretamente
+•	[ ] Personalização visual funcionando
+•	[ ] Upload de logos/assets
+•	[ ] Configuração de campos customizados
+GESTÃO DE VAGAS
+•	[ ] Criação/edição/exclusão de vagas
+•	[ ] Formulários dinâmicos por empresa
+•	[ ] Sistema de candidaturas
+•	[ ] Dashboard administrativo
+IA E ANÁLISE
+•	[ ] Upload de currículos (PDF/DOCX)
+•	[ ] Análise via Hugging Face funcionando
+•	[ ] Extração de dados precisa
+•	[ ] Scores e matching calculados
+________________________________________
+🛡️ REQUISITOS DE SEGURANÇA (NÃO NEGOCIÁVEIS)
+ISOLAMENTO MULTI-TENANT:
+// Todas queries devem incluir tenantId
+const data = await prisma.table.findMany({
+  where: { tenantId: user.tenantId } // OBRIGATÓRIO
+})
+VALIDAÇÃO DE ENTRADA:
+// Zod validation em todos endpoints
+const schema = z.object({
+  email: z.string().email(),
+  tenantId: z.string().uuid()
+})
+ROW LEVEL SECURITY (Supabase):
+-- Políticas RLS ativas para todas tabelas
+CREATE POLICY tenant_isolation ON table_name 
+  FOR ALL USING (tenant_id = auth.jwt() ->> 'tenant_id');
+MIDDLEWARE SEGURO:
+// Validar tenant antes de qualquer operação
+export function middleware(request) {
+  const tenant = validateTenant(request)
+  if (!tenant) return Response.redirect('/404')
+}
+________________________________________
+📋 INFORMAÇÕES NECESSÁRIAS
+FORNEÇA IMEDIATAMENTE:
+🔑 Credenciais:
+•	Supabase URL e Service Role Key
+•	Hugging Face API Token
+•	Stripe Secret Key (test)
+•	NextAuth Secret
+📊 Estado Atual:
+•	Última funcionalidade implementada?
+•	Há dados críticos no banco?
+•	Usuários já cadastrados?
+🎯 Prioridades:
+•	Funcionalidades mais críticas?
+•	Prazo para restaurar?
+•	Ambiente (dev/prod)?
+________________________________________
+🚀 PLANO DE AÇÃO
+FASE 1: DIAGNÓSTICO 
+1.	Verificar estrutura e dependências
+2.	Testar conexões (DB, IA, Stripe)
+3.	Validar segurança multi-tenant
+4.	Identificar problemas críticos
+FASE 2: CORREÇÕES 
+1.	Corrigir problemas de segurança PRIMEIRO
+2.	Restaurar integrações quebradas
+3.	Validar isolamento entre tenants
+4.	Testar funcionalidades core
+FASE 3: VALIDAÇÃO (1h)
+1.	Teste end-to-end completo
+2.	Verificar performance
+3.	Confirmar deploy funcionando
+4.	Documentar correções realizadas
+________________________________________
+⚡ AÇÃO IMEDIATA
+EXECUTE AGORA:
+1.	Audit completo do sistema atual
+2.	Teste isolamento multi-tenant rigorosamente
+3.	Valide segurança em todos endpoints
+4.	Corrija problemas sem gambiarras
+5.	Documente tudo que foi corrigido
+IMPORTANTE: Se encontrar algo que não consegue corrigir ou precisa de informações, PERGUNTE IMEDIATAMENTE.
+ZERO TOLERÂNCIA: Gambiarras, código provisório, ou soluções inseguras.
+________________________________________
+🎯 RESULTADO ESPERADO
+SISTEMA TRIAXIA 100% FUNCIONAL:
+•	✅ Multi-tenant isolado e seguro
+•	✅ Todas funcionalidades implementadas funcionando
+•	✅ Hugging Face processando IA corretamente
+•	✅ Supabase com RLS ativo
+•	✅ Vercel deploy estável
+•	✅ Zero vulnerabilidades de segurança
+•	✅ Performance otimizada
+MISSÃO: Sistema profissional, seguro e production-ready 🚀
+
