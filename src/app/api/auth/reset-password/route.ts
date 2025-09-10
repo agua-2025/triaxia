@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { validatePassword } from '@/lib/auth/password-security'
+import { validatePasswordSecurity } from '@/lib/auth/password-security'
 import { auditLogger } from '@/lib/audit/audit-logger'
 import { getClientIP } from '@/lib/utils/ip'
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar força da senha
-    const passwordValidation = validatePassword(password)
+    const passwordValidation = validatePasswordSecurity(password)
     if (!passwordValidation.isValid) {
       return NextResponse.json(
         { 

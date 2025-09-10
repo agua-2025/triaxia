@@ -2,16 +2,40 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, AlertTriangle, Loader2, Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
+import {
+  CheckCircle,
+  AlertTriangle,
+  Loader2,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Shield,
+} from 'lucide-react';
 import Link from 'next/link';
+import { PasswordRequirements } from '@/components/ui/password-requirements';
 // Removido import da função do servidor - agora usamos API route
 
-type ActivationStatus = 'idle' | 'validating' | 'valid' | 'expired' | 'invalid' | 'activating' | 'success' | 'error';
+type ActivationStatus =
+  | 'idle'
+  | 'validating'
+  | 'valid'
+  | 'expired'
+  | 'invalid'
+  | 'activating'
+  | 'success'
+  | 'error';
 
 export default function ActivatePage() {
   const searchParams = useSearchParams();
@@ -34,11 +58,11 @@ export default function ActivatePage() {
     }
 
     setStatus('validating');
-    
+
     // Validar token via API route
     fetch(`/api/auth/activate?token=${encodeURIComponent(token)}`)
       .then(response => response.json())
-      .then((result) => {
+      .then(result => {
         if (!result.isValid) {
           setStatus('invalid');
           setError(result.error || 'Token de ativação inválido ou expirado');
@@ -48,7 +72,7 @@ export default function ActivatePage() {
         setTokenData(result.data);
         setStatus('valid');
       })
-      .catch((err) => {
+      .catch(err => {
         setStatus('expired');
         setError('Erro ao validar token de ativação');
       });
@@ -74,7 +98,7 @@ export default function ActivatePage() {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/activate', {
+      const response = await fetch('/api/auth/activate-account', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,21 +106,27 @@ export default function ActivatePage() {
         body: JSON.stringify({
           token,
           password,
+          confirmPassword,
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
+        if (result.details && result.details.errors) {
+          // Erro de validação de senha - mostrar detalhes específicos
+          const errorMessages = result.details.errors.join(', ');
+          throw new Error(`Senha não atende aos requisitos: ${errorMessages}`);
+        }
         throw new Error(result.error || 'Erro ao ativar conta');
       }
 
       setStatus('success');
-      
+
       // Redirecionar após 3 segundos com informações do tenant
       setTimeout(() => {
-        const tenantSlug = result.user?.tenant?.slug || tokenData?.tenantSlug;
-        const loginUrl = tenantSlug 
+        const tenantSlug = result.tenant?.slug || tokenData?.tenantSlug;
+        const loginUrl = tenantSlug
           ? `/login?message=account-activated&tenant=${tenantSlug}`
           : '/login?message=account-activated';
         router.push(loginUrl);
@@ -130,9 +160,7 @@ export default function ActivatePage() {
             </Alert>
             <div className="flex justify-center">
               <Link href="/login">
-                <Button variant="outline">
-                  Voltar ao Login
-                </Button>
+                <Button variant="outline">Voltar ao Login</Button>
               </Link>
             </div>
           </div>
@@ -159,7 +187,7 @@ export default function ActivatePage() {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     placeholder="Digite sua nova senha"
                     className="pr-10"
                   />
@@ -168,7 +196,11 @@ export default function ActivatePage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -180,7 +212,7 @@ export default function ActivatePage() {
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={e => setConfirmPassword(e.target.value)}
                     placeholder="Confirme sua nova senha"
                     className="pr-10"
                   />
@@ -189,10 +221,23 @@ export default function ActivatePage() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
+
+              <PasswordRequirements
+                password={password}
+                userInfo={{
+                  email: tokenData?.email,
+                  name: tokenData?.email?.split('@')[0],
+                }}
+                className="mt-4"
+              />
 
               {error && (
                 <Alert className="border-red-200 bg-red-50">
@@ -203,7 +248,7 @@ export default function ActivatePage() {
                 </Alert>
               )}
 
-              <Button 
+              <Button
                 onClick={handleActivation}
                 className="w-full"
                 disabled={!password || !confirmPassword}
@@ -232,7 +277,8 @@ export default function ActivatePage() {
                 Conta Ativada com Sucesso!
               </h2>
               <p className="text-gray-600">
-                Sua conta foi ativada. Você será redirecionado para o login em alguns segundos.
+                Sua conta foi ativada. Você será redirecionado para o login em
+                alguns segundos.
               </p>
             </div>
             <Link href="/login">
@@ -254,7 +300,7 @@ export default function ActivatePage() {
               </AlertDescription>
             </Alert>
             <div className="flex justify-center space-x-2">
-              <Button 
+              <Button
                 onClick={() => {
                   setStatus('valid');
                   setError('');
@@ -264,9 +310,7 @@ export default function ActivatePage() {
                 Tentar Novamente
               </Button>
               <Link href="/login">
-                <Button variant="outline">
-                  Voltar ao Login
-                </Button>
+                <Button variant="outline">Voltar ao Login</Button>
               </Link>
             </div>
           </div>
@@ -288,9 +332,7 @@ export default function ActivatePage() {
             Complete o processo de ativação da sua conta
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {renderContent()}
-        </CardContent>
+        <CardContent>{renderContent()}</CardContent>
       </Card>
     </div>
   );

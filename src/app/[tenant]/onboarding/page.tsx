@@ -109,7 +109,8 @@ export default function TenantOnboardingPage() {
   const handleFinishOnboarding = () => {
     setCurrentStep(3)
     setTimeout(() => {
-      router.push(`/${tenantSlug}/dashboard`)
+      // Redirecionar para configurações primeiro, depois dashboard
+      router.push(`/${tenantSlug}/dashboard/configuracoes`)
     }, 2000)
   }
 

@@ -317,6 +317,48 @@ export class AuditLogger {
     });
   }
 
+  public async logPasswordResetAttempt(data: {
+    email: string;
+    success: boolean;
+    error?: string;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    await this.log({
+      eventType: AuditEventType.PASSWORD_VALIDATION_FAILED,
+      severity: data.success ? AuditSeverity.LOW : AuditSeverity.HIGH,
+      email: data.email,
+      ipAddress: data.ipAddress,
+      userAgent: data.userAgent,
+      success: data.success,
+      errorMessage: data.error,
+      metadata: {
+        resetAttemptAt: new Date().toISOString(),
+      },
+    });
+  }
+
+  public async logPasswordReset(data: {
+    email: string;
+    success: boolean;
+    error?: string;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    await this.log({
+      eventType: data.success ? AuditEventType.PASSWORD_CREATED : AuditEventType.PASSWORD_VALIDATION_FAILED,
+      severity: data.success ? AuditSeverity.MEDIUM : AuditSeverity.HIGH,
+      email: data.email,
+      ipAddress: data.ipAddress,
+      userAgent: data.userAgent,
+      success: data.success,
+      errorMessage: data.error,
+      metadata: {
+        passwordResetAt: new Date().toISOString(),
+      },
+    });
+  }
+
   private async handleCriticalEvent(auditEntry: any): Promise<void> {
     try {
       console.error('🚨 EVENTO CRÍTICO:', {

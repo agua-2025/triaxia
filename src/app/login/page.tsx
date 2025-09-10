@@ -57,13 +57,24 @@ export default function LoginPage() {
         const redirectTo = urlParams.get('redirect')
         const tenant = urlParams.get('tenant')
         
-        // Verificar se é SUPER_ADMIN
-        if (email === 'vivendamirassol@gmail.com') {
+        // Debug logs
+        console.log('🔍 Debug - Parâmetros de redirecionamento:')
+        console.log('- redirectTo:', redirectTo)
+        console.log('- tenant:', tenant)
+        console.log('- activationMessage:', activationMessage)
+        console.log('- email:', email)
+        
+        // Verificar permissões de usuário
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
+        
+        if (profile?.role === 'super_admin') {
           setLoadingMessage('Redirecionando para painel administrativo...')
           const targetUrl = redirectTo && redirectTo.startsWith('/system-admin') ? redirectTo : '/system-admin'
-          setTimeout(() => {
-            router.push(targetUrl)
-          }, 1000)
+          router.push(targetUrl)
         } else {
           setLoadingMessage('Redirecionando para dashboard...')
           let targetUrl = '/dashboard'
@@ -79,9 +90,31 @@ export default function LoginPage() {
             targetUrl = `/${tenant}/onboarding`
           }
           
-          setTimeout(() => {
+          console.log('🎯 Redirecionando usuário para:', targetUrl)
+          console.log('🔍 URL atual antes do push:', window.location.href)
+          console.log('🔍 Pathname atual:', window.location.pathname)
+          
+          // Tentar redirecionamento
+          try {
             router.push(targetUrl)
-          }, 1000)
+            console.log('✅ router.push executado')
+            
+            // Verificar se mudou após um tempo
+            setTimeout(() => {
+              console.log('🌐 URL após redirecionamento:', window.location.href)
+              console.log('🌐 Pathname após redirecionamento:', window.location.pathname)
+              
+              if (window.location.pathname === '/login') {
+                console.error('❌ Redirecionamento falhou - ainda na página de login')
+                console.log('🔧 Tentando redirecionamento alternativo...')
+                window.location.href = targetUrl
+              }
+            }, 1000)
+          } catch (error) {
+            console.error('❌ Erro no router.push:', error)
+            console.log('🔧 Tentando redirecionamento com window.location...')
+            window.location.href = targetUrl
+          }
         }
       }
     } catch (err) {
@@ -98,11 +131,11 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center mb-4 shadow-lg border-2 border-blue-500/20">
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Triaxia</h1>
-          <p className="text-gray-600">Sistema de Administração</p>
+          <p className="text-gray-600">Sistema de Administração Seguro</p>
         </div>
 
         <Card className="shadow-xl">
@@ -216,16 +249,10 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="text-center space-y-2">
-                <p className="text-sm text-gray-600">
-                  Para acessar como SUPER_ADMIN:
-                </p>
-                <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                  Email: vivendamirassol@gmail.com
-                </p>
+              <div className="text-center">
                 <Link 
                   href="/" 
-                  className="text-sm text-blue-600 hover:text-blue-800 inline-flex items-center"
+                  className="text-sm text-blue-600 hover:text-blue-800 inline-flex items-center justify-center"
                 >
                   ← Voltar ao início
                 </Link>

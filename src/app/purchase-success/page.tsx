@@ -10,6 +10,7 @@ import {
   ArrowRight,
   RefreshCw,
   XCircle,
+  AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -134,146 +135,146 @@ export default function PurchaseSuccessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="flex justify-center mb-6">
-            <div
-              className={`rounded-full p-4 ${state.status === 'error' ? 'bg-red-100' : 'bg-green-100'}`}
-            >
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          {/* Header com ícone de sucesso */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-green-50 border border-green-200 rounded-full mb-3">
               {state.status === 'error' ? (
-                <XCircle className="w-16 h-16 text-red-600" />
+                <XCircle className="w-6 h-6 text-red-600" />
               ) : (
-                <CheckCircle className="w-16 h-16 text-green-600" />
+                <CheckCircle className="w-6 h-6 text-green-600" />
               )}
             </div>
+            
+            <h1 className="text-xl font-semibold text-gray-900 mb-1">
+              {state.status === 'error'
+                ? 'Falha no processamento'
+                : 'Pagamento confirmado'}
+            </h1>
+            
+            <p className="text-sm text-gray-600">
+              {state.status === 'error'
+                ? 'Ocorreu um problema ao processar sua compra.'
+                : tenantName
+                ? `Obrigado por escolher a Triaxia para ${tenantName}.`
+                : 'Obrigado por escolher a Triaxia.'}
+            </p>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {state.status === 'error'
-              ? 'Ops! Algo deu errado'
-              : '🎉 Pagamento realizado com sucesso!'}
-          </h1>
-          
-          {!minimumTimeElapsed && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-700">
-                ⏱️ Processando sua compra... Por favor, não feche esta página.
-              </p>
+          {/* Status de processamento */}
+          {!minimumTimeElapsed && state.status !== 'error' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-2 mb-4">
+              <div className="flex items-center text-xs text-blue-800">
+                <RefreshCw className="w-3 h-3 mr-2 animate-spin" />
+                Processando sua compra. Aguarde um momento.
+              </div>
             </div>
           )}
 
-          <p className="text-lg text-gray-600 mb-6">
-            {tenantName ? (
-              <>
-                Obrigado por escolher a Triaxia para{' '}
-                <strong>{tenantName}</strong>!
-              </>
-            ) : (
-              'Obrigado por escolher a Triaxia!'
-            )}
-          </p>
+          {/* Status de finalização */}
+          {state.status === 'loading' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-2 mb-4">
+              <div className="flex items-center text-xs text-blue-800">
+                <RefreshCw className="w-3 h-3 mr-2 animate-spin" />
+                Finalizando sua compra e preparando seu acesso.
+              </div>
+            </div>
+          )}
 
-          {/* Status de Finalização */}
+          {state.status === 'success' && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-2 mb-4">
+              <div className="flex items-center text-xs text-green-800">
+                <CheckCircle className="w-3 h-3 mr-2" />
+                Finalizado e email de ativação enviado.
+              </div>
+            </div>
+          )}
+
+          {/* Próximos passos */}
           {state.status !== 'error' && (
-            <div className="mb-6">
-              {state.status === 'loading' && (
-                <div className="inline-flex items-center text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
-                  <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                  Finalizando sua compra e preparando seu acesso…
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-medium text-gray-900 mb-3">
+                  Próximos passos para acessar sua conta
+                </h2>
+                
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+                      1
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Verifique seu email</h3>
+                      <p className="text-xs text-gray-600">
+                        Enviamos um email de ativação para{' '}
+                        <span className="font-medium">{email || 'seu email'}</span>.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+                      2
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Crie sua senha</h3>
+                      <p className="text-xs text-gray-600">
+                        Clique no link 'Ativar Conta' no email e defina uma senha segura.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium">
+                      3
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Faça login e comece</h3>
+                      <p className="text-xs text-gray-600">
+                        Após criar sua senha, acesse a página de login.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              )}
-              {state.status === 'success' && (
-                <div className="inline-flex items-center text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-2">
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  {state.message || 'Tudo pronto!'}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Card de próximos passos */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <Mail className="w-8 h-8 text-blue-600 mr-3" />
-              <h2 className="text-xl font-semibold text-blue-900">
-                Próximos Passos para Acessar sua Conta
-              </h2>
-            </div>
-
-            <div className="text-left space-y-4">
-              <Step
-                n={1}
-                title="📧 Verifique seu email"
-                desc={
-                  <>
-                    Enviamos um email de ativação para{' '}
-                    <span className="font-medium text-blue-600">
-                      {email || 'seu email'}
-                    </span>
-                    . Verifique sua caixa de entrada e spam.
-                  </>
-                }
-              />
-              <Step
-                n={2}
-                title="🔐 Crie sua senha"
-                desc="Clique no link 'Ativar Conta' no email e defina uma senha segura para sua conta."
-              />
-              <Step
-                n={3}
-                title="🚀 Faça login e comece"
-                desc={
-                  <>
-                    Após criar sua senha, acesse{' '}
-                    <span className="font-medium text-blue-600">
-                      {typeof window !== 'undefined' ? window.location.origin : ''}/login
-                    </span>
-                    {' '}com seu email e senha.
-                  </>
-                }
-              />
-            </div>
-
-            {/* Botão de acesso direto ao login */}
-            <div className="mt-6 pt-4 border-t border-blue-200">
-              <div className="text-center">
-                <p className="text-sm text-blue-700 mb-3">
-                  💡 <strong>Dica:</strong> Após ativar sua conta, use este link para fazer login:
-                </p>
+              </div>
+              
+              {/* Botão de login */}
+              <div className="pt-3 border-t border-gray-200">
                 <a 
                   href="/login"
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <span>Página de Login</span>
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 1h6m0 0v6m0-6L10 11" />
-                  </svg>
+                  Ir para página de login
+                  <ArrowRight className="w-3 h-3 ml-1" />
                 </a>
-                <p className="text-xs text-blue-600 mt-2">
-                  ⚠️ Só funciona após ativar sua conta pelo email
+                <p className="text-xs text-gray-500 text-center mt-1">
+                  Disponível após ativar sua conta
                 </p>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Informações importantes */}
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            <Info
-              color="yellow"
-              icon={<Clock className="w-5 h-5 text-yellow-600 mr-2" />}
-              title="Tempo limite"
-            >
-              O link de ativação expira em <strong>48 horas</strong>.
-            </Info>
-            <Info
-              color="green"
-              icon={<Shield className="w-5 h-5 text-green-600 mr-2" />}
-              title="Segurança"
-            >
-              Sua conta está protegida com criptografia avançada.
-            </Info>
-          </div>
+          {/* Informações de segurança */}
+          {state.status !== 'error' && (
+            <div className="mt-4 pt-3 border-t border-gray-200">
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="flex flex-col items-center">
+                  <Clock className="w-4 h-4 text-gray-400 mb-1" />
+                  <p className="text-xs text-gray-600">
+                    <span className="font-medium">48h</span> para ativar
+                  </p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Shield className="w-4 h-4 text-gray-400 mb-1" />
+                  <p className="text-xs text-gray-600">
+                    <span className="font-medium">Seguro</span> e protegido
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Ajuda / erro */}
           {state.status === 'error' && (

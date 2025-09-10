@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validar o token de ativação
-    const validationResult = await validateAndUseActivationToken({ token });
+    // Validar o token de ativação sem consumi-lo
+    const validationResult = await validateActivationTokenOnly({ token });
     
     if (!validationResult.isValid || !validationResult.data) {
       return NextResponse.json(
@@ -26,17 +26,10 @@ export async function POST(request: NextRequest) {
 
     const { userId, email, tenantId } = validationResult.data;
 
-    // Atualizar o usuário para ativar a conta
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        isActive: true,
-      },
-    });
-
     return NextResponse.json({
       success: true,
-      message: 'Conta ativada com sucesso',
+      message: 'Token válido',
+      data: { userId, email, tenantId },
     });
   } catch (error) {
     console.error('Erro na ativação:', error);
